@@ -1,0 +1,9 @@
+[project]
+dependencies = [
+    "pip",
+    "numpy",
+    "dash[cloud]",
+    "dash-bootstrap-components",
+    "pandas",
+    "pydantic"
+]

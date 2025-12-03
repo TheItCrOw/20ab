@@ -1,0 +1,60 @@
+{
+  "date": "2025-11-30",
+  "winner": "Maura",
+  "loser": "Agnes",
+  "rounds": [
+    { "username": "Agnes", "value": 25 },
+    { "username": "Felix", "value": 20 },
+    { "username": "Maura", "value": 20 },
+    { "username": "Manu", "value": 20 },
+    { "username": "Kevin", "value": 20 },
+
+    { "username": "Agnes", "value": 25 },
+    { "username": "Felix", "value": 10 },
+    { "username": "Maura", "value": 14 },
+    { "username": "Manu", "value": 22 },
+    { "username": "Kevin", "value": 22 },
+
+    { "username": "Agnes", "value": 21 },
+    { "username": "Felix", "value": 16 },
+    { "username": "Maura", "value": 16 },
+    { "username": "Manu", "value": 24 },
+    { "username": "Kevin", "value": 16 },
+
+    { "username": "Agnes", "value": 22 },
+    { "username": "Felix", "value": 15 },
+    { "username": "Maura", "value": 15 },
+    { "username": "Manu", "value": 23 },
+    { "username": "Kevin", "value": 16 },
+
+    { "username": "Agnes", "value": 32 },
+    { "username": "Felix", "value": 15 },
+    { "username": "Maura", "value": 9 },
+    { "username": "Manu", "value": 23 },
+    { "username": "Kevin", "value": 12 },
+
+    { "username": "Agnes", "value": 37 },
+    { "username": "Felix", "value": 20 },
+    { "username": "Maura", "value": 9 },
+    { "username": "Manu", "value": 19 },
+    { "username": "Kevin", "value": 11 },
+
+    { "username": "Agnes", "value": 37 },
+    { "username": "Felix", "value": 18 },
+    { "username": "Maura", "value": 6 },
+    { "username": "Manu", "value": 20 },
+    { "username": "Kevin", "value": 12 },
+
+    { "username": "Agnes", "value": 38 },
+    { "username": "Felix", "value": 18 },
+    { "username": "Maura", "value": 2 },
+    { "username": "Manu", "value": 19 },
+    { "username": "Kevin", "value": 17 },
+
+    { "username": "Agnes", "value": 41 },
+    { "username": "Felix", "value": null },
+    { "username": "Maura", "value": 0 },
+    { "username": "Manu", "value": null },
+    { "username": "Kevin", "value": null }
+  ]
+}

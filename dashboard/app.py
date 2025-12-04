@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 from dash import Dash, html, dcc, page_container, page_registry, callback, Input, Output
 import dash_bootstrap_components as dbc
@@ -43,13 +44,12 @@ app.layout = html.Div(
             className="theme-toggle-btn",
         ),
 
-        dbc.Row(
-            className="g-0",
-            style={"minHeight": "100vh"},
+        html.Div(
+            className="g-0 d-flex",
             children=[
                 # Sidebar
-                dbc.Col(
-                    width=2,
+                html.Div(
+                    #width=2,
                     children=[
                         html.Div(
                             html.Img(
@@ -76,24 +76,36 @@ app.layout = html.Div(
                         html.Hr(),
                         html.Div(
                             [
-                                html.Label("Select Players:", className="text-center w-100 mb-1"),
+                                html.Label("Select Players:", className="fw-bold text-center w-100 mb-1"),
                                 dcc.Dropdown(
-                                    [p.username for p in players],
+                                    [constants.ALL_PLAYERS_NAME] + [p.username for p in players],
                                     id="players-selection",
                                     multi=True,
-                                    value=[p.username for p in players]
+                                    value=constants.ALL_PLAYERS_NAME
                                 ),
                             ],
                             className="mb-2 "
                         ),
+                        html.Div(
+                            [
+                                html.Label("Time Range:", className="fw-bold text-center w-100 mb-1"),
+                                dcc.DatePickerRange(
+                                    id="date-selection",
+                                    start_date="2025-11-01",
+                                    end_date=str(datetime.today().date()),
+                                    display_format="YYYY-MM-DD",
+                                    className="w-100",
+                                ),
+                            ],
+                            className="mb-3 mt-4"
+                        )
                     ],
                     className="sidebar"
                 ),
 
                 # Main content
-                dbc.Col(
-                    width=10,
-                    style={"padding": "1rem"},
+                html.Div(
+                    className="main-content",
                     children=page_container,
                 ),
             ],

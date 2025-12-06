@@ -19,6 +19,12 @@ class DataService:
         self.games = self._load_games()
         print("Loaded all data, cached it; ready to work.")
 
+    def get_player_by_username(self, username: str) -> Player:
+        for player in self.players:
+            if player.username == username:
+                return player
+        raise ValueError(f"Player with username '{username}' not found.")
+
     def get_all_players(self) -> list[Player]:
         return self.players
 
@@ -26,6 +32,7 @@ class DataService:
         return self.games
 
     def get_games(self, start_date: datetime, end_date: datetime, players: list[str]) -> list[Game]:
+        """Returns a filtered and sorted (date, desc) list of games."""
         filtered_games = self.games
 
         if start_date and end_date:
@@ -41,7 +48,7 @@ class DataService:
                 if players_set.intersection(game.participants)
             ]
 
-        return filtered_games
+        return sorted(filtered_games, key=lambda game: game.date, reverse=True)
 
     def _load_players(self) -> list[Player]:
         path = os.path.join(self.data_path, "players.json")

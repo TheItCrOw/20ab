@@ -1,0 +1,79 @@
+{
+  "date": "2025-11-30",
+  "winner": "Agnes",
+  "loser": "Kevin",
+  "rounds": [
+    {
+      "moves": [
+        { "username": "Kevin", "value": 25 },
+        { "username": "Maura", "value": 18 },
+        { "username": "Felix", "value": 21 },
+        { "username": "Agnes", "value": 17 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Kevin", "value": 24 },
+        { "username": "Maura", "value": 17 },
+        { "username": "Felix", "value": 20 },
+        { "username": "Agnes", "value": 15 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Kevin", "value": 22 },
+        { "username": "Maura", "value": 16 },
+        { "username": "Felix", "value": 21 },
+        { "username": "Agnes", "value": 14 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Kevin", "value": 27 },
+        { "username": "Maura", "value": 15 },
+        { "username": "Felix", "value": 20 },
+        { "username": "Agnes", "value": 11 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Kevin", "value": 32 },
+        { "username": "Maura", "value": 14 },
+        { "username": "Felix", "value": 17 },
+        { "username": "Agnes", "value": 10 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Kevin", "value": 37 },
+        { "username": "Maura", "value": 15 },
+        { "username": "Felix", "value": 14 },
+        { "username": "Agnes", "value": 8 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Kevin", "value": 35 },
+        { "username": "Maura", "value": 16 },
+        { "username": "Felix", "value": 11 },
+        { "username": "Agnes", "value": 9 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Kevin", "value": 36 },
+        { "username": "Maura", "value": 15 },
+        { "username": "Felix", "value": 10 },
+        { "username": "Agnes", "value": 6 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Kevin", "value": 41 },
+        { "username": "Maura", "value": null },
+        { "username": "Felix", "value": null },
+        { "username": "Agnes", "value": null }
+      ]
+    }
+  ]
+}

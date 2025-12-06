@@ -1,0 +1,87 @@
+{
+  "date": "2025-11-30",
+  "winner": "Agnes",
+  "loser": "Felix",
+  "rounds": [
+    {
+      "moves": [
+        {
+          "username": "Felix",
+          "value": 22
+        },
+        {
+          "username": "Agnes",
+          "value": 16
+        },
+        {
+          "username": "Kevin",
+          "value": 14
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Felix",
+          "value": 24
+        },
+        {
+          "username": "Agnes",
+          "value": 8
+        },
+        {
+          "username": "Kevin",
+          "value": 12
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Felix",
+          "value": 21
+        },
+        {
+          "username": "Agnes",
+          "value": 7
+        },
+        {
+          "username": "Kevin",
+          "value": 11
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Felix",
+          "value": 23
+        },
+        {
+          "username": "Agnes",
+          "value": 1
+        },
+        {
+          "username": "Kevin",
+          "value": 7
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Felix",
+          "value": 28
+        },
+        {
+          "username": "Agnes",
+          "value": 0
+        },
+        {
+          "username": "Kevin",
+          "value": 7
+        }
+      ]
+    }
+  ]
+}

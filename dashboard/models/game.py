@@ -7,13 +7,18 @@ from models.round import Round
 
 class Game(BaseModel):
     date: datetime
-    rounds: List[Round] = Field(default_factory=list)
+    rounds: list[Round] = Field(default_factory=list)
     winner: str
     loser: str
 
-    participants: list[str] = Field(default_factory=set, exclude=True)
+    participants: list[str] = Field(default_factory=list, exclude=True)
 
     @model_validator(mode="after")
     def compute_participants(self) -> "Game":
-        self.participants = list({r.username for r in self.rounds})
+        usernames = {
+            move.username
+            for rnd in self.rounds
+            for move in rnd.moves
+        }
+        self.participants = list(usernames)
         return self

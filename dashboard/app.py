@@ -4,6 +4,7 @@ from datetime import datetime
 from dash import Dash, html, dcc, page_container, page_registry, callback, Input, Output
 import dash_bootstrap_components as dbc
 import plotly.io as pio
+import dash_mantine_components as dmc
 
 import constants
 from services.data_service import DataService
@@ -19,6 +20,7 @@ app = Dash(
     ],
 )
 app.title = "20 ab Dashboard"
+server = app.server
 
 LIGHT_THEME = dbc.themes.LUX
 DARK_THEME = dbc.themes.DARKLY
@@ -26,8 +28,35 @@ DARK_THEME = dbc.themes.DARKLY
 data_service = DataService(constants.DATA_PATH)
 players = data_service.get_all_players()
 
-app.layout = html.Div(
+app.clientside_callback(
+    """
+    function(n) {
+        // Read the current window width every interval tick
+        if (typeof window === 'undefined') {
+            return 1200;  // server-side / initial default
+        }
+        return window.innerWidth;
+    }
+    """,
+    Output("window-width", "data"),
+    Input("resize-listener", "n_intervals")
+)
+
+app.layout = dmc.MantineProvider([html.Div(
     [
+        # Store current window width
+        dcc.Store(id="window-width", data=1200),
+
+        # Simple periodic trigger to read window.innerWidth
+        dcc.Interval(id="resize-listener", interval=500, n_intervals=0),
+
+        # Burger menu top right when screen is small
+        dbc.Button(
+            html.I(className="fa-solid fa-bars"),
+            id="burger-menu",
+            color="primary",
+        ),
+
         # Theme stylesheet we toggle
         html.Link(
             id="theme-link",
@@ -40,7 +69,7 @@ app.layout = html.Div(
             html.I(className="fa-solid fa-moon theme-icon fade-in"),
             id="theme-toggle",
             n_clicks=0,
-            color="secondary",
+            color="primary",
             className="theme-toggle-btn",
         ),
 
@@ -49,11 +78,11 @@ app.layout = html.Div(
             children=[
                 # Sidebar
                 html.Div(
-                    #width=2,
+                    # width=2,
                     children=[
                         html.Div(
                             html.Img(
-                                src="/assets/images/logo_transparent.png",
+                                src="assets/images/logo_transparent.png",
                                 className="logo"
                             ),
                             className="text-center mb-4",
@@ -100,7 +129,8 @@ app.layout = html.Div(
                             className="mb-3 mt-4"
                         )
                     ],
-                    className="sidebar"
+                    className="sidebar",
+                    id="sidebar"
                 ),
 
                 # Main content
@@ -111,7 +141,7 @@ app.layout = html.Div(
             ],
         ),
     ]
-)
+)])
 
 
 @app.callback(
@@ -125,6 +155,36 @@ def toggle_theme(n_clicks):
         return LIGHT_THEME, html.I(className="fa-solid fa-moon theme-icon fade-in")
     else:
         return DARK_THEME, html.I(className="fa-solid fa-sun theme-icon fade-in")
+
+
+@app.callback(
+    Output("sidebar", "className"),
+    Output("burger-menu", "children"),
+    Input("burger-menu", "n_clicks"),
+    Input("window-width", "data"),
+)
+def toggle_sidebar(n_clicks, width):
+    """
+    - On desktop (width >= 1000): always show sidebar, burger reset to bars.
+    - On mobile  (width < 1000): sidebar is toggled by burger.
+    """
+    if width is None:
+        width = 1200
+
+    is_desktop = width >= 1000
+
+    bars_icon = html.I(className="fa-solid fa-bars")
+    close_icon = html.I(className="fa-solid fa-xmark")
+
+    # DESKTOP: always visible, ignore burger state
+    if is_desktop:
+        return "sidebar", bars_icon
+
+    # MOBILE:
+    if not n_clicks or n_clicks % 2 == 0:
+        return "sidebar sidebar-hidden", bars_icon
+
+    return "sidebar", close_icon
 
 
 if __name__ == "__main__":

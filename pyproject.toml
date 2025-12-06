@@ -1,9 +1,20 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["dashboard"]
+
 [project]
+name = "20ab-dashboard"
+version = "0.0.1"
 dependencies = [
     "pip",
     "numpy",
     "dash[cloud]",
     "dash-bootstrap-components",
+    "dash-mantine-components",
     "pandas",
-    "pydantic"
+    "pydantic",
+    "waitress"
 ]

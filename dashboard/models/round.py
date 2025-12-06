@@ -2,7 +2,8 @@ from dataclasses import dataclass
 
 from pydantic import BaseModel
 
+from models.move import Move
+
 
 class Round(BaseModel):
-    username: str
-    value: int | None = 20
+    moves: list["Move"]

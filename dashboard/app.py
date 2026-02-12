@@ -48,7 +48,7 @@ app.layout = dmc.MantineProvider([html.Div(
         dcc.Store(id="window-width", data=1200),
 
         # Simple periodic trigger to read window.innerWidth
-        dcc.Interval(id="resize-listener", interval=500, n_intervals=0),
+        dcc.Interval(id="resize-listener", interval=3000, n_intervals=0),
 
         # Burger menu top right when screen is small
         dbc.Button(

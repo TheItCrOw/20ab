@@ -1,0 +1,84 @@
+{
+  "date": "2026-02-21",
+  "winner": "Felix",
+  "loser": "Luise",
+  "rounds": [
+    {
+      "moves": [
+        { "username": "Luise", "value": 25 },
+        { "username": "Moritz", "value": 15 },
+        { "username": "Felix", "value": 21 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Luise", "value": 27 },
+        { "username": "Moritz", "value": 9 },
+        { "username": "Felix", "value": 17 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Luise", "value": 23 },
+        { "username": "Moritz", "value": 11 },
+        { "username": "Felix", "value": 11 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Luise", "value": 24 },
+        { "username": "Moritz", "value": 8 },
+        { "username": "Felix", "value": 9 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Luise", "value": 20 },
+        { "username": "Moritz", "value": 7 },
+        { "username": "Felix", "value": 14 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Luise", "value": 17 },
+        { "username": "Moritz", "value": 12 },
+        { "username": "Felix", "value": 12 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Luise", "value": 14 },
+        { "username": "Moritz", "value": 11 },
+        { "username": "Felix", "value": 11 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Luise", "value": 13 },
+        { "username": "Moritz", "value": 16 },
+        { "username": "Felix", "value": 7 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Luise", "value": 12 },
+        { "username": "Moritz", "value": 14 },
+        { "username": "Felix", "value": 5 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Luise", "value": 8 },
+        { "username": "Moritz", "value": 10 },
+        { "username": "Felix", "value": 3 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Luise", "value": 9 },
+        { "username": "Moritz", "value": 8 },
+        { "username": "Felix", "value": 0 }
+      ]
+    }
+  ]
+}

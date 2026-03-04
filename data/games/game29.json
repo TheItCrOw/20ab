@@ -1,0 +1,49 @@
+{
+  "date": "2026-01-31",
+  "winner": "Felix",
+  "loser": "Moritz",
+  "rounds": [
+    {
+      "moves": [
+        { "username": "Moritz", "value": 21 },
+        { "username": "Agnes", "value": 18 },
+        { "username": "Felix", "value": 17 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Moritz", "value": 18 },
+        { "username": "Agnes", "value": 16 },
+        { "username": "Felix", "value": 18 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Moritz", "value": 23 },
+        { "username": "Agnes", "value": 13 },
+        { "username": "Felix", "value": 16 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Moritz", "value": 21 },
+        { "username": "Agnes", "value": 15 },
+        { "username": "Felix", "value": 8 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Moritz", "value": 20 },
+        { "username": "Agnes", "value": 13 },
+        { "username": "Felix", "value": 6 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Moritz", "value": 18 },
+        { "username": "Agnes", "value": 11 },
+        { "username": "Felix", "value": 0 }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "date": "2026-01-31",
+  "winner": "Felix",
+  "loser": "Agnes",
+  "rounds": [
+    {
+      "moves": [
+        { "username": "Moritz", "value": 21 },
+        { "username": "Felix", "value": 18 },
+        { "username": "Agnes", "value": 18 },
+        { "username": "Luise", "value": 19 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Moritz", "value": 26 },
+        { "username": "Felix", "value": 16 },
+        { "username": "Agnes", "value": 16 },
+        { "username": "Luise", "value": 18 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Moritz", "value": 27 },
+        { "username": "Felix", "value": 12 },
+        { "username": "Agnes", "value": 21 },
+        { "username": "Luise", "value": 17 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Moritz", "value": 24 },
+        { "username": "Felix", "value": 9 },
+        { "username": "Agnes", "value": 22 },
+        { "username": "Luise", "value": 18 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Moritz", "value": 29 },
+        { "username": "Felix", "value": 8 },
+        { "username": "Agnes", "value": 19 },
+        { "username": "Luise", "value": 17 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Moritz", "value": 26 },
+        { "username": "Felix", "value": 7 },
+        { "username": "Agnes", "value": 18 },
+        { "username": "Luise", "value": 22 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Moritz", "value": 25 },
+        { "username": "Felix", "value": 5 },
+        { "username": "Agnes", "value": 17 },
+        { "username": "Luise", "value": 21 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Moritz", "value": 23 },
+        { "username": "Felix", "value": 2 },
+        { "username": "Agnes", "value": 23 },
+        { "username": "Luise", "value": 26 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Moritz", "value": 22 },
+        { "username": "Felix", "value": 0 },
+        { "username": "Agnes", "value": 27 },
+        { "username": "Luise", "value": 24 }
+      ]
+    }
+  ]
+}

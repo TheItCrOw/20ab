@@ -1,3 +1,7 @@
+*.aab
+
+/mobile-app/releases
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

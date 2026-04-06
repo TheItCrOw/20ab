@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "20 ab",
+    "slug": "20ab",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "twentyab",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/logo_transparent.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0C0C16"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.twentyab.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#1B5E20"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.twentyab.app"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-mail-composer"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "3cee4df2-600b-4caa-ae1b-05bdfe7ed585"
+      },
+      "router": {}
+    },
+    "owner": "theitcrow"
+  }
+}

@@ -10,6 +10,7 @@ import constants
 from constants import GAMES_PAGE_SIZE
 from services.data_service import DataService, get_data_service
 from utils.component_utils import build_game_table, get_filtered_games, build_leaderboard_table
+from utils.statistics_utils import score_trajectory
 
 register_page(__name__, path="/", name="Home")
 
@@ -74,7 +75,31 @@ layout = dbc.Container(
                     html.H5("Leaderboard", className="mb-0 p-3 bg-lightgray text-center"),
                     html.Div(id="leaderboard-table-container"),
                 ], className="w-100 my-card mb-4")
-            ], xs=12, md=12, lg=12, xxl=12)
+            ], xs=12, md=12, lg=12, xxl=12),
+            dbc.Col(
+                html.Div(
+                    dcc.Graph(id="score-trajectory-chart", config={
+                        "displayModeBar": False,
+                        "scrollZoom": False,
+                        "displaylogo": False,
+                        "staticPlot": True,
+                    }),
+                    className="w-100 my-card p-3 mb-4",
+                ),
+                xs=12, md=12, lg=12, xxl=8
+            ),
+            dbc.Col(
+                html.Div(
+                    dcc.Graph(id="monthly-activity-chart", config={
+                        "displayModeBar": False,
+                        "scrollZoom": False,
+                        "displaylogo": False,
+                        "staticPlot": True,
+                    }),
+                    className="w-100 my-card p-3 mb-4",
+                ),
+                xs=12, md=12, lg=12, xxl=4
+            ),
         ],
         ),
     ],
@@ -213,23 +238,22 @@ def update_player_win_losses_chart(selected_players: list[str], start_date: str,
     fig.update_layout(
         barmode="group",
         title={
-            "text": "Wins and Losses per Player",
+            "text": "Finishes / Wins / Losses per Player",
             "x": 0,
-            "xanchor": "left"
+            "xanchor": "left",
         },
-        xaxis_title="Player",
-        yaxis_title="Number of Games",
         legend=dict(
             orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="right",
-            x=1
+            yanchor="top",
+            y=-0.15,
+            xanchor="center",
+            x=0.5,
         ),
-        margin=dict(l=0, r=0, t=0, b=0),
+        margin=dict(l=0, r=0, t=30, b=0),
     )
-    # Force integer ticks on the Y-axis
-    fig.update_yaxes(dtick=1)
+    fig.update_yaxes(tickmode="auto", nticks=6, rangemode="tozero")
+    fig.update_xaxes(title=None)
+    fig.update_yaxes(title=None)
 
     return fig
 
@@ -253,3 +277,120 @@ def update_player_win_losses_chart(selected_players: list[str], start_date: str,
     players = [get_data_service().get_player_by_username(p) for p in selected_players]
 
     return build_leaderboard_table(players, games)
+
+
+@callback(
+    Output("score-trajectory-chart", "figure"),
+    Input("players-selection", "value"),
+    Input("date-selection", "start_date"),
+    Input("date-selection", "end_date"),
+)
+def update_score_trajectory(selected_players: list[str], start_date: str, end_date: str):
+    fig = go.Figure()
+
+    if not selected_players:
+        fig.update_layout(title="No players selected")
+        return fig
+
+    if constants.ALL_PLAYERS_NAME in selected_players:
+        selected_players = [p.username for p in get_data_service().get_all_players()]
+
+    games = get_filtered_games(selected_players, start_date, end_date)
+
+    if not games:
+        fig.update_layout(title="No games in this period")
+        return fig
+
+    for username in selected_players:
+        player = get_data_service().get_player_by_username(username)
+        player_games = [g for g in games if username in g.participants]
+        traj = score_trajectory(player, player_games, min_samples=2)
+        if not traj:
+            continue
+        rounds = list(traj.keys())
+        scores = list(traj.values())
+        fig.add_trace(go.Scatter(
+            x=rounds,
+            y=scores,
+            mode="lines+markers",
+            name=username,
+            line=dict(width=2),
+            marker=dict(size=5),
+        ))
+
+    fig.update_layout(
+        title={
+            "text": "Avg Score Trajectory per Round",
+            "x": 0,
+            "xanchor": "left",
+        },
+        xaxis_title="Round",
+        yaxis_title="Avg Score",
+        legend=dict(
+            orientation="h",
+            yanchor="top",
+            y=-0.2,
+            xanchor="center",
+            x=0.5,
+        ),
+        margin=dict(l=0, r=0, t=30, b=0),
+    )
+    fig.update_yaxes(rangemode="tozero")
+    fig.update_xaxes(dtick=1)
+
+    return fig
+
+
+@callback(
+    Output("monthly-activity-chart", "figure"),
+    Input("players-selection", "value"),
+    Input("date-selection", "start_date"),
+    Input("date-selection", "end_date"),
+)
+def update_monthly_activity(selected_players: list[str], start_date: str, end_date: str):
+    fig = go.Figure()
+
+    games = get_filtered_games(selected_players, start_date, end_date) if selected_players else []
+
+    # Build a complete list of months in the selected date range
+    start_dt = datetime.fromisoformat(start_date)
+    end_dt = datetime.fromisoformat(end_date)
+    months = []
+    y, m = start_dt.year, start_dt.month
+    while (y, m) <= (end_dt.year, end_dt.month):
+        months.append(f"{y}-{m:02d}")
+        m += 1
+        if m > 12:
+            m = 1
+            y += 1
+
+    counts = {month: 0 for month in months}
+    for game in games:
+        key = game.date.strftime("%Y-%m")
+        if key in counts:
+            counts[key] += 1
+
+    labels = [
+        datetime.strptime(k, "%Y-%m").strftime("%b '%y")
+        for k in months
+    ]
+
+    fig.add_trace(go.Bar(
+        x=labels,
+        y=[counts[k] for k in months],
+        showlegend=False,
+    ))
+
+    fig.update_layout(
+        title={
+            "text": "Games per Month",
+            "x": 0,
+            "xanchor": "left",
+        },
+        xaxis_title="Month",
+        yaxis_title="Games",
+        margin=dict(l=0, r=0, t=0, b=0),
+    )
+    fig.update_yaxes(tickmode="auto", nticks=6, rangemode="tozero")
+
+    return fig

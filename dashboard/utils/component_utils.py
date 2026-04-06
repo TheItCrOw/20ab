@@ -7,8 +7,12 @@ import constants
 from models.game import Game
 from models.player import Player
 from services.data_service import get_data_service
-from utils.statistics_utils import total_wins, total_finishes, total_losses, win_percentage, finish_percentage, \
-    loss_percentage, avg_points_per_round, dropout_percentage
+from utils.statistics_utils import (
+    total_wins, total_finishes, total_losses,
+    win_percentage, finish_percentage, loss_percentage,
+    avg_points_per_round, dropout_percentage,
+    avg_final_score, current_streak,
+)
 
 
 def build_leaderboard_table(players: list[Player], games: list[Game]):
@@ -26,6 +30,9 @@ def build_leaderboard_table(players: list[Player], games: list[Game]):
         loss_pct = loss_percentage(player, player_games)
         avg_ppr = avg_points_per_round(player, player_games)
         dropout_pct = dropout_percentage(player, player_games)
+        avg_fs = avg_final_score(player, player_games)
+        streak_type, streak_len = current_streak(player, player_games)
+        streak_str = f"{streak_type}{streak_len}" if streak_len > 0 else "—"
 
         rows.append({
             "Player": player.username,
@@ -38,6 +45,8 @@ def build_leaderboard_table(players: list[Player], games: list[Game]):
             "Loss%": loss_pct * 100 if games_played > 0 else 0.0,
             "AvgPPR": avg_ppr,
             "Dropout%": dropout_pct * 100,
+            "AvgFinal": avg_fs,
+            "Streak": streak_str,
         })
 
     columns = [
@@ -51,6 +60,8 @@ def build_leaderboard_table(players: list[Player], games: list[Game]):
         {"name": "Loss %", "id": "Loss%", "type": "numeric", "format": {"specifier": ".1f"}},
         {"name": "Avg PPR", "id": "AvgPPR", "type": "numeric", "format": {"specifier": ".2f"}},
         {"name": "Dropout %", "id": "Dropout%", "type": "numeric", "format": {"specifier": ".1f"}},
+        {"name": "Avg Final Score", "id": "AvgFinal", "type": "numeric", "format": {"specifier": ".1f"}},
+        {"name": "Streak", "id": "Streak"},
     ]
 
     datatable = dash_table.DataTable(

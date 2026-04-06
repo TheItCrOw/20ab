@@ -2,6 +2,74 @@ from models.game import Game
 from models.player import Player
 
 
+def avg_final_score(player: Player, games: list[Game]) -> float:
+    """
+    Average of each player's last recorded score across games.
+    Lower is better — the finisher always contributes 0, losers contribute high values.
+    """
+    scores = []
+    for game in games:
+        last_value = None
+        for rnd in game.rounds:
+            move = next(
+                (m for m in rnd.moves if m.username == player.username and m.value is not None),
+                None,
+            )
+            if move is not None:
+                last_value = move.value
+        if last_value is not None:
+            scores.append(last_value)
+    return sum(scores) / len(scores) if scores else 0.0
+
+
+def score_trajectory(player: Player, games: list[Game], min_samples: int = 2) -> dict[int, float]:
+    """
+    Average score at each round position across all games.
+    Only includes positions with at least min_samples data points to avoid single-game noise.
+    """
+    round_sums: dict[int, float] = {}
+    round_counts: dict[int, int] = {}
+
+    for game in games:
+        for round_idx, rnd in enumerate(game.rounds, start=1):
+            move = next(
+                (m for m in rnd.moves if m.username == player.username and m.value is not None),
+                None,
+            )
+            if move is not None:
+                round_sums[round_idx] = round_sums.get(round_idx, 0.0) + move.value
+                round_counts[round_idx] = round_counts.get(round_idx, 0) + 1
+
+    return {
+        r: round_sums[r] / round_counts[r]
+        for r in sorted(round_sums)
+        if round_counts[r] >= min_samples
+    }
+
+
+def current_streak(player: Player, games: list[Game]) -> tuple[str, int]:
+    """
+    Current consecutive win ('W') or loss ('L') streak for the player,
+    based on chronological game order within the provided games list.
+    """
+    player_games = sorted(
+        [g for g in games if player.username in g.participants],
+        key=lambda g: g.date,
+    )
+    if not player_games:
+        return ("W", 0)
+
+    streak_type = "L" if player_games[-1].loser == player.username else "W"
+    count = 0
+    for game in reversed(player_games):
+        is_loss = game.loser == player.username
+        if (streak_type == "W" and not is_loss) or (streak_type == "L" and is_loss):
+            count += 1
+        else:
+            break
+    return (streak_type, count)
+
+
 def total_wins(player: Player, games: list[Game]) -> int:
     """Return the total number of games the player won (i.e. was not the loser)."""
     return sum(1 for game in games if player.username in game.winners)

@@ -68,13 +68,31 @@ def build_leaderboard_table(players: list[Player], games: list[Game]):
         id="leaderboard-table",
         columns=columns,
         data=rows,
-        sort_action="native",  # <-- built-in sort (click header)
+        sort_action="native",
         sort_mode="multi",
-        page_action="native",  # <-- built-in pagination
+        page_action="native",
         page_size=10,
-        style_table={"overflowX": "auto"},
-        style_header={"fontWeight": "bold"},
-        style_cell={"padding": "8px"},
+        cell_selectable=False,
+        fixed_columns={"headers": True, "data": 1},
+        style_table={"overflowX": "auto", "minWidth": "100%"},
+        style_header={
+            "fontWeight": "600",
+            "fontSize": "12px",
+            "borderBottom": "2px solid #E3E6F0",
+        },
+        style_cell={
+            "padding": "8px 12px",
+            "whiteSpace": "nowrap",
+            "fontSize": "13px",
+            "border": "1px solid #EEF0F6",
+        },
+        style_cell_conditional=[
+            {
+                "if": {"column_id": "Player"},
+                "fontWeight": "600",
+                "borderRight": "2px solid #D4D7E8",
+            }
+        ],
     )
 
     # Optional: wrap in Mantine container/card to keep your DMC look

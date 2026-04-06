@@ -1,5 +1,5 @@
 import math
-from datetime import date, datetime
+from datetime import datetime
 
 from dash import html, dcc, register_page, Output, Input, callback
 import dash_mantine_components as dmc
@@ -16,95 +16,130 @@ register_page(__name__, path="/", name="Home")
 
 data_service = DataService(constants.DATA_PATH)
 
+_LOADING_COLOR = "#6366F1"
+_CHART_CFG = {"displayModeBar": False, "scrollZoom": False, "displaylogo": False, "staticPlot": True}
+
+
+def _card(*children, extra_class=""):
+    return html.Div(children, className=f"w-100 my-card mb-4 {extra_class}".strip())
+
+
+def _card_with_header(title, *children, badge=None):
+    header_children = [html.Span(title, className="section-header-title")]
+    if badge is not None:
+        header_children.append(
+            html.Span(str(badge), className="small-font text-muted")
+        )
+    return html.Div([
+        html.Div(header_children, className="section-header"),
+        *children,
+    ], className="w-100 my-card mb-4")
+
+
 layout = dbc.Container(
     fluid=True,
     children=[
-        html.H1("Home", className="mt-4 mb-4 text-center"),
+        html.H1("Home", className="page-title"),
 
         dbc.Row([
+            # ── Wins/Losses bar chart ────────────────
             dbc.Col(
-                html.Div(
-                    [
-                        html.Div(
-                            [
-                                dcc.Graph(id="wins-loses-bar-chart", config={
-                                    "displayModeBar": False,
-                                    "scrollZoom": False,
-                                    "displaylogo": False,
-                                    "staticPlot": True
-                                }),
-                            ],
-                            className="w-100 my-card p-3 mb-4",
-                        ),
-                    ],
+                _card(
+                    dcc.Loading(
+                        dcc.Graph(id="wins-loses-bar-chart", config=_CHART_CFG),
+                        type="circle",
+                        color=_LOADING_COLOR,
+                        className="chart-loading-wrap",
+                    ),
+                    extra_class="p-3",
                 ),
-                xs=12, md=12, lg=12, xxl=6
+                xs=12, md=12, lg=12, xxl=6,
             ),
-            dbc.Col(
-                html.Div(
-                    [
-                        html.H5(
-                            [html.Span("Total Recorded Games:", className="me-1"),
-                             html.Span(len(data_service.get_all_games()), className="ms-1"),
-                             ],
-                            className="w-100 mb-0 d-flex justify-content-between p-3 bg-lightgray", ),
-                        html.Div(
-                            [
-                                # Actual game list
-                                html.Div(id="recent-games-list"),
 
-                                # Pagination at the bottom
-                                dmc.Pagination(
-                                    id="recent-games-pagination",
-                                    total=1,  # will be updated by callback
-                                    value=1,  # current page
-                                    siblings=1,
-                                    boundaries=1,
-                                    color="dark",
-                                    className="mt-3 pb-2 ps-2 pe-2",
-                                ),
-                            ]
-                        )
-                    ],
-                    className="w-100 my-card mb-4",
-                ),
-                xs=12, md=12, lg=12, xxl=6
-            ),
-            dbc.Col([
+            # ── Game list ────────────────────────────
+            dbc.Col(
                 html.Div([
-                    html.H5("Leaderboard", className="mb-0 p-3 bg-lightgray text-center"),
-                    html.Div(id="leaderboard-table-container"),
-                ], className="w-100 my-card mb-4")
-            ], xs=12, md=12, lg=12, xxl=12),
-            dbc.Col(
-                html.Div(
-                    dcc.Graph(id="score-trajectory-chart", config={
-                        "displayModeBar": False,
-                        "scrollZoom": False,
-                        "displaylogo": False,
-                        "staticPlot": True,
-                    }),
-                    className="w-100 my-card p-3 mb-4",
-                ),
-                xs=12, md=12, lg=12, xxl=8
+                    html.Div(
+                        [
+                            html.Span("Recent Games", className="section-header-title"),
+                            html.Span(
+                                [html.Span(len(data_service.get_all_games()), className="fw-bold"),
+                                 html.Span(" total", className="ms-1 text-muted small-font")],
+                            ),
+                        ],
+                        className="section-header",
+                    ),
+                    dcc.Loading(
+                        html.Div(id="recent-games-list"),
+                        type="circle",
+                        color=_LOADING_COLOR,
+                        className="list-loading-wrap",
+                    ),
+                    dmc.Pagination(
+                        id="recent-games-pagination",
+                        total=1,
+                        value=1,
+                        siblings=1,
+                        boundaries=1,
+                        color="indigo",
+                        className="mt-2 pb-2 ps-3 pe-3",
+                    ),
+                ], className="w-100 my-card mb-4"),
+                xs=12, md=12, lg=12, xxl=6,
             ),
+
+            # ── Leaderboard ──────────────────────────
             dbc.Col(
-                html.Div(
-                    dcc.Graph(id="monthly-activity-chart", config={
-                        "displayModeBar": False,
-                        "scrollZoom": False,
-                        "displaylogo": False,
-                        "staticPlot": True,
-                    }),
-                    className="w-100 my-card p-3 mb-4",
-                ),
-                xs=12, md=12, lg=12, xxl=4
+                html.Div([
+                    html.Div(
+                        html.Span("Leaderboard", className="section-header-title"),
+                        className="section-header",
+                    ),
+                    dcc.Loading(
+                        html.Div(id="leaderboard-table-container"),
+                        type="circle",
+                        color=_LOADING_COLOR,
+                        className="list-loading-wrap",
+                    ),
+                ], className="w-100 my-card mb-4"),
+                xs=12, md=12, lg=12, xxl=12,
             ),
-        ],
-        ),
+
+            # ── Score trajectory ─────────────────────
+            dbc.Col(
+                _card(
+                    dcc.Loading(
+                        dcc.Graph(id="score-trajectory-chart", config=_CHART_CFG),
+                        type="circle",
+                        color=_LOADING_COLOR,
+                        className="chart-loading-wrap",
+                    ),
+                    extra_class="p-3",
+                ),
+                xs=12, md=12, lg=12, xxl=8,
+            ),
+
+            # ── Monthly activity ─────────────────────
+            dbc.Col(
+                _card(
+                    dcc.Loading(
+                        dcc.Graph(id="monthly-activity-chart", config=_CHART_CFG),
+                        type="circle",
+                        color=_LOADING_COLOR,
+                        className="chart-loading-wrap",
+                    ),
+                    extra_class="p-3",
+                ),
+                xs=12, md=12, lg=12, xxl=4,
+            ),
+        ]),
     ],
 )
 
+
+# ─────────────────────────────────────────────────────
+# Callbacks
+# ─────────────────────────────────────────────────────
 
 @callback(
     Output("recent-games-pagination", "total"),
@@ -113,11 +148,9 @@ layout = dbc.Container(
     Input("date-selection", "start_date"),
     Input("date-selection", "end_date"),
 )
-def update_recent_games_pagination(selected_players: list[str], start_date: str, end_date: str):
+def update_pagination(selected_players, start_date, end_date):
     games = get_filtered_games(selected_players, start_date, end_date)
-
     total_pages = max(1, math.ceil(len(games) / GAMES_PAGE_SIZE))
-    # Always reset to first page when filters change
     return total_pages, 1
 
 
@@ -128,89 +161,78 @@ def update_recent_games_pagination(selected_players: list[str], start_date: str,
     Input("date-selection", "end_date"),
     Input("recent-games-pagination", "value"),
 )
-def update_recent_games_list(selected_players: list[str], start_date: str, end_date: str, page: int):
+def update_recent_games(selected_players, start_date, end_date, page):
     games = get_filtered_games(selected_players, start_date, end_date)
 
     if not games:
-        return html.P("No games in this period.", className="text-center p-3")
+        return html.P("No games in this period.", className="text-center p-4 text-muted small-font")
 
-    # Pagination slice
     start_idx = (page - 1) * GAMES_PAGE_SIZE
-    end_idx = start_idx + GAMES_PAGE_SIZE
-    current_games = games[start_idx:end_idx]
+    current_games = games[start_idx: start_idx + GAMES_PAGE_SIZE]
 
-    list_items = []
-    for i, game in enumerate(current_games, start=1):
-        rounds_table = build_game_table(game)
+    items = []
+    for game in current_games:
+        pills = html.Div(
+            [
+                html.Span(
+                    p,
+                    className=(
+                        "me-1 small-font player-span"
+                        + (" bg-finish"  if p == game.finisher else "")
+                        + (" bg-danger"  if p == game.loser    else "")
+                        + (" bg-win"     if p != game.finisher and p != game.loser else "")
+                    ),
+                )
+                for p in game.participants
+            ],
+        )
+
+        date_label = html.Span(
+            str(game.date.date()),
+            className="small-font me-2",
+            style={"color": "var(--text-3)", "whiteSpace": "nowrap"},
+        )
 
         accordion = dmc.Accordion(
             children=[
                 dmc.AccordionItem(
                     children=[
                         dmc.AccordionControl(
-                            [
-                                html.Div(
-                                    className="d-flex align-items-center justify-content-between",
-                                    children=[
-                                        html.Div(
-                                            [
-                                                html.Span(
-                                                    str(p),
-                                                    className=(
-                                                        "me-2 small-font player-span "
-                                                        f"{'bg-success text-white' if p == game.finisher else ''} "
-                                                        f"{'bg-danger text-white' if p == game.loser else ''}"
-                                                    ).strip(),
-                                                )
-                                                for p in game.participants
-                                            ],
-                                        ),
-                                        html.Label(
-                                            str(game.date.date()),
-                                            className="small-font me-2",
-                                        ),
-                                    ],
-                                )
-                            ]
+                            html.Div(
+                                [pills, date_label],
+                                className="d-flex align-items-center justify-content-between w-100",
+                            )
                         ),
-                        dmc.AccordionPanel(rounds_table),
+                        dmc.AccordionPanel(build_game_table(game)),
                     ],
                     value="0",
                 )
             ],
             value="1",
         )
+        items.append(accordion)
 
-        list_items.append(accordion)
-
-    return list_items
+    return items
 
 
 @callback(
     Output("wins-loses-bar-chart", "figure"),
     Input("players-selection", "value"),
     Input("date-selection", "start_date"),
-    Input("date-selection", "end_date")
+    Input("date-selection", "end_date"),
 )
-def update_player_win_losses_chart(selected_players: list[str], start_date: str, end_date: str):
+def update_bar_chart(selected_players, start_date, end_date):
     if not selected_players:
-        fig = go.Figure()
-        fig.update_layout(
-            title="No players selected",
-            xaxis_title="Player",
-            yaxis_title="Count",
-        )
-        return fig
+        return go.Figure().update_layout(title="No players selected")
 
-    # If "All players" selected, expand to all usernames
     if constants.ALL_PLAYERS_NAME in selected_players:
         selected_players = [p.username for p in get_data_service().get_all_players()]
 
     games = get_filtered_games(selected_players, start_date, end_date)
 
-    wins = {name: 0 for name in selected_players}
-    finishes = {name: 0 for name in selected_players}
-    losses = {name: 0 for name in selected_players}
+    wins     = {n: 0 for n in selected_players}
+    finishes = {n: 0 for n in selected_players}
+    losses   = {n: 0 for n in selected_players}
 
     for g in games:
         for name in g.winners:
@@ -221,40 +243,20 @@ def update_player_win_losses_chart(selected_players: list[str], start_date: str,
         if g.loser in losses:
             losses[g.loser] += 1
 
-    # Preserve the order of selected_players on x-axis
     x = selected_players
-    y_wins = [wins[name] for name in x]
-    y_finishes = [finishes[name] for name in x]
-    y_losses = [losses[name] for name in x]
-
-    fig = go.Figure(
-        data=[
-            go.Bar(name="Losses", x=x, y=y_losses),
-            go.Bar(name="Wins", x=x, y=y_wins),
-            go.Bar(name="Finishes", x=x, y=y_finishes),
-        ]
-    )
-
+    fig = go.Figure(data=[
+        go.Bar(name="Losses",   x=x, y=[losses[n]   for n in x], marker_color="#EF4444"),
+        go.Bar(name="Wins",     x=x, y=[wins[n]     for n in x], marker_color="#22C55E"),
+        go.Bar(name="Finishes", x=x, y=[finishes[n] for n in x], marker_color="#F59E0B"),
+    ])
     fig.update_layout(
         barmode="group",
-        title={
-            "text": "Finishes / Wins / Losses per Player",
-            "x": 0,
-            "xanchor": "left",
-        },
-        legend=dict(
-            orientation="h",
-            yanchor="top",
-            y=-0.15,
-            xanchor="center",
-            x=0.5,
-        ),
-        margin=dict(l=0, r=0, t=30, b=0),
+        title={"text": "Finishes / Wins / Losses per Player", "x": 0, "xanchor": "left"},
+        legend=dict(orientation="h", yanchor="top", y=-0.18, xanchor="center", x=0.5),
+        margin=dict(l=0, r=0, t=36, b=68),
     )
-    fig.update_yaxes(tickmode="auto", nticks=6, rangemode="tozero")
-    fig.update_xaxes(title=None)
-    fig.update_yaxes(title=None)
-
+    fig.update_yaxes(tickmode="auto", nticks=6, rangemode="tozero", title=None, automargin=True)
+    fig.update_xaxes(title=None, automargin=True)
     return fig
 
 
@@ -262,20 +264,18 @@ def update_player_win_losses_chart(selected_players: list[str], start_date: str,
     Output("leaderboard-table-container", "children"),
     Input("players-selection", "value"),
     Input("date-selection", "start_date"),
-    Input("date-selection", "end_date")
+    Input("date-selection", "end_date"),
 )
-def update_player_win_losses_chart(selected_players: list[str], start_date: str, end_date: str):
+def update_leaderboard(selected_players, start_date, end_date):
     games = get_filtered_games(selected_players, start_date, end_date)
 
-    # If "All players" selected, expand to all usernames
     if constants.ALL_PLAYERS_NAME in selected_players:
         selected_players = [p.username for p in get_data_service().get_all_players()]
 
     if not games:
-        return html.P("No games in this period.", className="text-center p-3")
+        return html.P("No games in this period.", className="text-center p-4 text-muted small-font")
 
     players = [get_data_service().get_player_by_username(p) for p in selected_players]
-
     return build_leaderboard_table(players, games)
 
 
@@ -285,33 +285,27 @@ def update_player_win_losses_chart(selected_players: list[str], start_date: str,
     Input("date-selection", "start_date"),
     Input("date-selection", "end_date"),
 )
-def update_score_trajectory(selected_players: list[str], start_date: str, end_date: str):
+def update_trajectory(selected_players, start_date, end_date):
     fig = go.Figure()
 
     if not selected_players:
-        fig.update_layout(title="No players selected")
-        return fig
+        return fig.update_layout(title="No players selected") or fig
 
     if constants.ALL_PLAYERS_NAME in selected_players:
         selected_players = [p.username for p in get_data_service().get_all_players()]
 
     games = get_filtered_games(selected_players, start_date, end_date)
-
     if not games:
-        fig.update_layout(title="No games in this period")
-        return fig
+        return fig.update_layout(title="No games in this period") or fig
 
     for username in selected_players:
         player = get_data_service().get_player_by_username(username)
-        player_games = [g for g in games if username in g.participants]
-        traj = score_trajectory(player, player_games, min_samples=2)
+        traj = score_trajectory(player, [g for g in games if username in g.participants], min_samples=2)
         if not traj:
             continue
-        rounds = list(traj.keys())
-        scores = list(traj.values())
         fig.add_trace(go.Scatter(
-            x=rounds,
-            y=scores,
+            x=list(traj.keys()),
+            y=list(traj.values()),
             mode="lines+markers",
             name=username,
             line=dict(width=2),
@@ -319,25 +313,14 @@ def update_score_trajectory(selected_players: list[str], start_date: str, end_da
         ))
 
     fig.update_layout(
-        title={
-            "text": "Avg Score Trajectory per Round",
-            "x": 0,
-            "xanchor": "left",
-        },
+        title={"text": "Avg Score Trajectory per Round", "x": 0, "xanchor": "left"},
         xaxis_title="Round",
         yaxis_title="Avg Score",
-        legend=dict(
-            orientation="h",
-            yanchor="top",
-            y=-0.2,
-            xanchor="center",
-            x=0.5,
-        ),
-        margin=dict(l=0, r=0, t=30, b=0),
+        legend=dict(orientation="h", yanchor="top", y=-0.22, xanchor="center", x=0.5),
+        margin=dict(l=0, r=0, t=36, b=80),
     )
-    fig.update_yaxes(rangemode="tozero")
-    fig.update_xaxes(dtick=1)
-
+    fig.update_yaxes(rangemode="tozero", automargin=True)
+    fig.update_xaxes(dtick=1, title_standoff=14, automargin=True)
     return fig
 
 
@@ -347,50 +330,60 @@ def update_score_trajectory(selected_players: list[str], start_date: str, end_da
     Input("date-selection", "start_date"),
     Input("date-selection", "end_date"),
 )
-def update_monthly_activity(selected_players: list[str], start_date: str, end_date: str):
-    fig = go.Figure()
-
+def update_monthly(selected_players, start_date, end_date):
     games = get_filtered_games(selected_players, start_date, end_date) if selected_players else []
 
-    # Build a complete list of months in the selected date range
     start_dt = datetime.fromisoformat(start_date)
-    end_dt = datetime.fromisoformat(end_date)
+    end_dt   = datetime.fromisoformat(end_date)
     months = []
     y, m = start_dt.year, start_dt.month
     while (y, m) <= (end_dt.year, end_dt.month):
         months.append(f"{y}-{m:02d}")
         m += 1
         if m > 12:
-            m = 1
-            y += 1
+            m, y = 1, y + 1
 
-    counts = {month: 0 for month in months}
+    counts = {mo: 0 for mo in months}
     for game in games:
         key = game.date.strftime("%Y-%m")
         if key in counts:
             counts[key] += 1
 
-    labels = [
-        datetime.strptime(k, "%Y-%m").strftime("%b '%y")
-        for k in months
-    ]
+    labels = [datetime.strptime(k, "%Y-%m").strftime("%b '%y") for k in months]
 
+    fig = go.Figure()
     fig.add_trace(go.Bar(
         x=labels,
         y=[counts[k] for k in months],
+        marker_color="#6366F1",
         showlegend=False,
     ))
-
     fig.update_layout(
-        title={
-            "text": "Games per Month",
-            "x": 0,
-            "xanchor": "left",
-        },
-        xaxis_title="Month",
-        yaxis_title="Games",
-        margin=dict(l=0, r=0, t=0, b=0),
+        title={"text": "Games per Month", "x": 0, "xanchor": "left"},
+        margin=dict(l=48, r=8, t=40, b=52),
     )
-    fig.update_yaxes(tickmode="auto", nticks=6, rangemode="tozero")
-
+    fig.update_xaxes(
+        title="Month",
+        showgrid=False,
+        showline=True,
+        linecolor="rgba(148,163,184,0.4)",
+        ticks="outside",
+        tickcolor="rgba(148,163,184,0.4)",
+        tickfont=dict(size=11, color="#8A8FA8"),
+        title_font=dict(size=12, color="#8A8FA8"),
+    )
+    fig.update_yaxes(
+        title="Games",
+        showgrid=True,
+        gridcolor="rgba(148,163,184,0.18)",
+        showline=True,
+        linecolor="rgba(148,163,184,0.4)",
+        rangemode="tozero",
+        tickmode="auto",
+        nticks=6,
+        ticks="outside",
+        tickcolor="rgba(148,163,184,0.4)",
+        tickfont=dict(size=11, color="#8A8FA8"),
+        title_font=dict(size=12, color="#8A8FA8"),
+    )
     return fig

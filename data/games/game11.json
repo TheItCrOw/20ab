@@ -1,6 +1,5 @@
 {
   "date": "2025-11-28",
-  "winner": "Manu",
   "loser": "Maura",
   "rounds": [
     {
@@ -219,5 +218,6 @@
         }
       ]
     }
-  ]
+  ],
+  "finisher": "Manu"
 }

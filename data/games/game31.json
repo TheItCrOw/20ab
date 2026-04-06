@@ -1,49 +1,103 @@
 {
   "date": "2026-01-31",
-  "winner": "Moritz",
   "loser": "Agnes",
   "rounds": [
     {
       "moves": [
-        { "username": "Moritz", "value": 19 },
-        { "username": "Agnes", "value": 17 },
-        { "username": "Felix", "value": 19 }
+        {
+          "username": "Moritz",
+          "value": 19
+        },
+        {
+          "username": "Agnes",
+          "value": 17
+        },
+        {
+          "username": "Felix",
+          "value": 19
+        }
       ]
     },
     {
       "moves": [
-        { "username": "Moritz", "value": 17 },
-        { "username": "Agnes", "value": 15 },
-        { "username": "Felix", "value": 18 }
+        {
+          "username": "Moritz",
+          "value": 17
+        },
+        {
+          "username": "Agnes",
+          "value": 15
+        },
+        {
+          "username": "Felix",
+          "value": 18
+        }
       ]
     },
     {
       "moves": [
-        { "username": "Moritz", "value": 11 },
-        { "username": "Agnes", "value": 11 },
-        { "username": "Felix", "value": 20 }
+        {
+          "username": "Moritz",
+          "value": 11
+        },
+        {
+          "username": "Agnes",
+          "value": 11
+        },
+        {
+          "username": "Felix",
+          "value": 20
+        }
       ]
     },
     {
       "moves": [
-        { "username": "Moritz", "value": 8 },
-        { "username": "Agnes", "value": 10 },
-        { "username": "Felix", "value": 19 }
+        {
+          "username": "Moritz",
+          "value": 8
+        },
+        {
+          "username": "Agnes",
+          "value": 10
+        },
+        {
+          "username": "Felix",
+          "value": 19
+        }
       ]
     },
     {
       "moves": [
-        { "username": "Moritz", "value": 4 },
-        { "username": "Agnes", "value": 12 },
-        { "username": "Felix", "value": 13 }
+        {
+          "username": "Moritz",
+          "value": 4
+        },
+        {
+          "username": "Agnes",
+          "value": 12
+        },
+        {
+          "username": "Felix",
+          "value": 13
+        }
       ]
     },
     {
       "moves": [
-        { "username": "Moritz", "value": 0 },
-        { "username": "Agnes", "value": 14 },
-        { "username": "Felix", "value": 7 }
+        {
+          "username": "Moritz",
+          "value": 0
+        },
+        {
+          "username": "Agnes",
+          "value": 14
+        },
+        {
+          "username": "Felix",
+          "value": 7
+        }
       ]
     }
-  ]
+  ],
+  "finisher": "Moritz"
 }

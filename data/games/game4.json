@@ -1,6 +1,5 @@
 {
   "date": "2025-11-30",
-  "winner": "Felix",
   "loser": "Agnes",
   "rounds": [
     {
@@ -131,5 +130,6 @@
         }
       ]
     }
-  ]
+  ],
+  "finisher": "Felix"
 }

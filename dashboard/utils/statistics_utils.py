@@ -3,8 +3,13 @@ from models.player import Player
 
 
 def total_wins(player: Player, games: list[Game]) -> int:
-    """Return the total number of games the player won."""
-    return sum(1 for game in games if game.winner == player.username)
+    """Return the total number of games the player won (i.e. was not the loser)."""
+    return sum(1 for game in games if player.username in game.winners)
+
+
+def total_finishes(player: Player, games: list[Game]) -> int:
+    """Return the total number of games the player finished first (reached 0)."""
+    return sum(1 for game in games if game.finisher == player.username)
 
 
 def total_losses(player: Player, games: list[Game]) -> int:
@@ -14,15 +19,26 @@ def total_losses(player: Player, games: list[Game]) -> int:
 
 def win_percentage(player: Player, games: list[Game]) -> float:
     """
-    Win% = wins / games_played.
+    Win% = wins (non-loser) / games_played.
     Returns 0.0 if the player has no games.
     """
     games_played = len(games)
     if games_played == 0:
         return 0.0
 
-    wins = total_wins(player, games)
-    return wins / games_played
+    return total_wins(player, games) / games_played
+
+
+def finish_percentage(player: Player, games: list[Game]) -> float:
+    """
+    Finish% = finishes / games_played.
+    Returns 0.0 if the player has no games.
+    """
+    games_played = len(games)
+    if games_played == 0:
+        return 0.0
+
+    return total_finishes(player, games) / games_played
 
 
 def loss_percentage(player: Player, games: list[Game]) -> float:

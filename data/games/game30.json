@@ -1,63 +1,135 @@
 {
   "date": "2026-01-31",
-  "winner": "Moritz",
   "loser": "Agnes",
   "rounds": [
     {
       "moves": [
-        { "username": "Moritz", "value": 17 },
-        { "username": "Agnes", "value": 25 },
-        { "username": "Felix", "value": 18 }
+        {
+          "username": "Moritz",
+          "value": 17
+        },
+        {
+          "username": "Agnes",
+          "value": 25
+        },
+        {
+          "username": "Felix",
+          "value": 18
+        }
       ]
     },
     {
       "moves": [
-        { "username": "Moritz", "value": 16 },
-        { "username": "Agnes", "value": 21 },
-        { "username": "Felix", "value": 19 }
+        {
+          "username": "Moritz",
+          "value": 16
+        },
+        {
+          "username": "Agnes",
+          "value": 21
+        },
+        {
+          "username": "Felix",
+          "value": 19
+        }
       ]
     },
     {
       "moves": [
-        { "username": "Moritz", "value": 13 },
-        { "username": "Agnes", "value": 26 },
-        { "username": "Felix", "value": 17 }
+        {
+          "username": "Moritz",
+          "value": 13
+        },
+        {
+          "username": "Agnes",
+          "value": 26
+        },
+        {
+          "username": "Felix",
+          "value": 17
+        }
       ]
     },
     {
       "moves": [
-        { "username": "Moritz", "value": 9 },
-        { "username": "Agnes", "value": 31 },
-        { "username": "Felix", "value": 16 }
+        {
+          "username": "Moritz",
+          "value": 9
+        },
+        {
+          "username": "Agnes",
+          "value": 31
+        },
+        {
+          "username": "Felix",
+          "value": 16
+        }
       ]
     },
     {
       "moves": [
-        { "username": "Moritz", "value": 5 },
-        { "username": "Agnes", "value": 25 },
-        { "username": "Felix", "value": 18 }
+        {
+          "username": "Moritz",
+          "value": 5
+        },
+        {
+          "username": "Agnes",
+          "value": 25
+        },
+        {
+          "username": "Felix",
+          "value": 18
+        }
       ]
     },
     {
       "moves": [
-        { "username": "Moritz", "value": 3 },
-        { "username": "Agnes", "value": 26 },
-        { "username": "Felix", "value": 15 }
+        {
+          "username": "Moritz",
+          "value": 3
+        },
+        {
+          "username": "Agnes",
+          "value": 26
+        },
+        {
+          "username": "Felix",
+          "value": 15
+        }
       ]
     },
     {
       "moves": [
-        { "username": "Moritz", "value": 1 },
-        { "username": "Agnes", "value": 28 },
-        { "username": "Felix", "value": 17 }
+        {
+          "username": "Moritz",
+          "value": 1
+        },
+        {
+          "username": "Agnes",
+          "value": 28
+        },
+        {
+          "username": "Felix",
+          "value": 17
+        }
       ]
     },
     {
       "moves": [
-        { "username": "Moritz", "value": 0 },
-        { "username": "Agnes", "value": 16 },
-        { "username": "Felix", "value": 13 }
+        {
+          "username": "Moritz",
+          "value": 0
+        },
+        {
+          "username": "Agnes",
+          "value": 16
+        },
+        {
+          "username": "Felix",
+          "value": 13
+        }
       ]
     }
-  ]
+  ],
+  "finisher": "Moritz"
 }

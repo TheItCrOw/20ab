@@ -133,7 +133,7 @@ def update_recent_games_list(selected_players: list[str], start_date: str, end_d
                                                     str(p),
                                                     className=(
                                                         "me-2 small-font player-span "
-                                                        f"{'bg-success text-white' if p == game.winner else ''} "
+                                                        f"{'bg-success text-white' if p == game.finisher else ''} "
                                                         f"{'bg-danger text-white' if p == game.loser else ''}"
                                                     ).strip(),
                                                 )
@@ -184,27 +184,29 @@ def update_player_win_losses_chart(selected_players: list[str], start_date: str,
     games = get_filtered_games(selected_players, start_date, end_date)
 
     wins = {name: 0 for name in selected_players}
+    finishes = {name: 0 for name in selected_players}
     losses = {name: 0 for name in selected_players}
 
-    # Count wins and losses across all games
     for g in games:
-        winner = getattr(g, "winner", None)
-        loser = getattr(g, "loser", None)
-
-        if winner in wins:
-            wins[winner] += 1
-        if loser in losses:
-            losses[loser] += 1
+        for name in g.winners:
+            if name in wins:
+                wins[name] += 1
+        if g.finisher in finishes:
+            finishes[g.finisher] += 1
+        if g.loser in losses:
+            losses[g.loser] += 1
 
     # Preserve the order of selected_players on x-axis
     x = selected_players
     y_wins = [wins[name] for name in x]
+    y_finishes = [finishes[name] for name in x]
     y_losses = [losses[name] for name in x]
 
     fig = go.Figure(
         data=[
             go.Bar(name="Losses", x=x, y=y_losses),
             go.Bar(name="Wins", x=x, y=y_wins),
+            go.Bar(name="Finishes", x=x, y=y_finishes),
         ]
     )
 

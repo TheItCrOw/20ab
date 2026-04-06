@@ -7,8 +7,8 @@ import constants
 from models.game import Game
 from models.player import Player
 from services.data_service import get_data_service
-from utils.statistics_utils import total_wins, total_losses, win_percentage, loss_percentage, avg_points_per_round, \
-    dropout_percentage
+from utils.statistics_utils import total_wins, total_finishes, total_losses, win_percentage, finish_percentage, \
+    loss_percentage, avg_points_per_round, dropout_percentage
 
 
 def build_leaderboard_table(players: list[Player], games: list[Game]):
@@ -19,8 +19,10 @@ def build_leaderboard_table(players: list[Player], games: list[Game]):
 
         games_played = len(player_games)
         wins = total_wins(player, player_games)
+        finishes = total_finishes(player, player_games)
         losses = total_losses(player, player_games)
         win_pct = win_percentage(player, player_games)
+        finish_pct = finish_percentage(player, player_games)
         loss_pct = loss_percentage(player, player_games)
         avg_ppr = avg_points_per_round(player, player_games)
         dropout_pct = dropout_percentage(player, player_games)
@@ -29,9 +31,11 @@ def build_leaderboard_table(players: list[Player], games: list[Game]):
             "Player": player.username,
             "Games": games_played,
             "Wins": wins,
+            "Finishes": finishes,
             "Losses": losses,
-            "Loss%": loss_pct * 100 if games_played > 0 else 0.0,
             "Win%": win_pct * 100 if games_played > 0 else 0.0,
+            "Finish%": finish_pct * 100 if games_played > 0 else 0.0,
+            "Loss%": loss_pct * 100 if games_played > 0 else 0.0,
             "AvgPPR": avg_ppr,
             "Dropout%": dropout_pct * 100,
         })
@@ -40,9 +44,11 @@ def build_leaderboard_table(players: list[Player], games: list[Game]):
         {"name": "Player", "id": "Player"},
         {"name": "Games", "id": "Games", "type": "numeric"},
         {"name": "Wins", "id": "Wins", "type": "numeric"},
+        {"name": "Finishes", "id": "Finishes", "type": "numeric"},
         {"name": "Losses", "id": "Losses", "type": "numeric"},
-        {"name": "Loss %", "id": "Loss%", "type": "numeric", "format": {"specifier": ".1f"}},
         {"name": "Win %", "id": "Win%", "type": "numeric", "format": {"specifier": ".1f"}},
+        {"name": "Finish %", "id": "Finish%", "type": "numeric", "format": {"specifier": ".1f"}},
+        {"name": "Loss %", "id": "Loss%", "type": "numeric", "format": {"specifier": ".1f"}},
         {"name": "Avg PPR", "id": "AvgPPR", "type": "numeric", "format": {"specifier": ".2f"}},
         {"name": "Dropout %", "id": "Dropout%", "type": "numeric", "format": {"specifier": ".1f"}},
     ]

@@ -1,42 +1,87 @@
 {
   "date": "2026-02-21",
-  "winner": "Felix",
   "loser": "Luise",
   "rounds": [
     {
       "moves": [
-        { "username": "Luise", "value": 22 },
-        { "username": "Moritz", "value": 16 },
-        { "username": "Felix", "value": 14 }
+        {
+          "username": "Luise",
+          "value": 22
+        },
+        {
+          "username": "Moritz",
+          "value": 16
+        },
+        {
+          "username": "Felix",
+          "value": 14
+        }
       ]
     },
     {
       "moves": [
-        { "username": "Luise", "value": 24 },
-        { "username": "Moritz", "value": 14 },
-        { "username": "Felix", "value": 6 }
+        {
+          "username": "Luise",
+          "value": 24
+        },
+        {
+          "username": "Moritz",
+          "value": 14
+        },
+        {
+          "username": "Felix",
+          "value": 6
+        }
       ]
     },
     {
       "moves": [
-        { "username": "Luise", "value": 22 },
-        { "username": "Moritz", "value": 13 },
-        { "username": "Felix", "value": 4 }
+        {
+          "username": "Luise",
+          "value": 22
+        },
+        {
+          "username": "Moritz",
+          "value": 13
+        },
+        {
+          "username": "Felix",
+          "value": 4
+        }
       ]
     },
     {
       "moves": [
-        { "username": "Luise", "value": 18 },
-        { "username": "Moritz", "value": 12 },
-        { "username": "Felix", "value": 9 }
+        {
+          "username": "Luise",
+          "value": 18
+        },
+        {
+          "username": "Moritz",
+          "value": 12
+        },
+        {
+          "username": "Felix",
+          "value": 9
+        }
       ]
     },
     {
       "moves": [
-        { "username": "Luise", "value": 14 },
-        { "username": "Moritz", "value": 14 },
-        { "username": "Felix", "value": 3 }
+        {
+          "username": "Luise",
+          "value": 14
+        },
+        {
+          "username": "Moritz",
+          "value": 14
+        },
+        {
+          "username": "Felix",
+          "value": 3
+        }
       ]
     }
-  ]
+  ],
+  "finisher": "Felix"
 }

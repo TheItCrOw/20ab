@@ -47,6 +47,8 @@ export default function GameScreen() {
   const [phase, setPhase] = useState<Phase>('loading');
   const [selectedTrump, setSelectedTrump] = useState<TrumpSuit | null>(null);
   const [showAbandonModal, setShowAbandonModal] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [playerOrder, setPlayerOrder] = useState<string[]>([]);
 
   useFocusEffect(
     useCallback(() => {
@@ -69,6 +71,7 @@ export default function GameScreen() {
     } else if (!activeGame.inProgress) {
       setPhase('game_finished');
     } else {
+      setPlayerOrder(activeGame.participants);
       setPhase('trump_select');
     }
   }
@@ -76,6 +79,7 @@ export default function GameScreen() {
   async function handleStartGame(selectedUsernames: string[]) {
     const newGame = createGame(selectedUsernames);
     setGame(newGame);
+    setPlayerOrder(selectedUsernames);
     await saveActiveGame(newGame);
     setPhase('trump_select');
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -123,6 +127,7 @@ export default function GameScreen() {
     setShowAbandonModal(false);
     setGame(null);
     setSelectedTrump(null);
+    setPlayerOrder([]);
     await saveActiveGame(null);
     setPhase('no_game');
   }
@@ -130,6 +135,7 @@ export default function GameScreen() {
   async function handleNewGame() {
     setGame(null);
     setSelectedTrump(null);
+    setPlayerOrder([]);
     await saveActiveGame(null);
     setPhase('no_game');
   }
@@ -194,8 +200,8 @@ export default function GameScreen() {
         </Modal>
 
         {/* Scrollable top: scoreboard + history */}
-        <ScrollView contentContainerStyle={styles.content}>
-          <ScoreBoard game={game} />
+        <ScrollView contentContainerStyle={styles.content} scrollEnabled={!isDragging}>
+          <ScoreBoard game={game} playerOrder={playerOrder} onReorder={setPlayerOrder} onDragActive={setIsDragging} />
           {game.rounds.length > 0 && <GameHistory game={game} />}
         </ScrollView>
 
@@ -234,6 +240,7 @@ export default function GameScreen() {
         game={game}
         players={players}
         trump={selectedTrump}
+        playerOrder={playerOrder}
         onSubmit={handleSubmitRound}
         onBack={() => {
           setSelectedTrump(null);

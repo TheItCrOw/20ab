@@ -3,7 +3,7 @@ import { StyleSheet, TouchableOpacity, View as RNView, Platform } from 'react-na
 import { Text } from './Themed';
 import Colors, { accent } from '@/constants/Colors';
 import { useColorScheme } from './useColorScheme';
-import { TrumpSuit, TRUMP_LABELS, TRUMP_SYMBOLS, TRUMP_COLORS } from '@/models/types';
+import { TrumpSuit, TRUMP_LABELS, TRUMP_ALIASES, TRUMP_SYMBOLS, TRUMP_COLORS } from '@/models/types';
 
 const SUITS: TrumpSuit[] = ['hearts', 'clubs', 'diamonds', 'spades'];
 
@@ -40,6 +40,9 @@ export default function TrumpSelector({ onSelect, roundNumber }: Props) {
             </Text>
             <Text style={[styles.label, { color: colors.text }]}>
               {TRUMP_LABELS[suit]}
+            </Text>
+            <Text style={[styles.alias, { color: colors.textSecondary }]}>
+              aka {TRUMP_ALIASES[suit]}
             </Text>
             {suit === 'hearts' && (
               <RNView style={[styles.badge, { backgroundColor: `${TRUMP_COLORS.hearts}18` }]}>
@@ -101,6 +104,7 @@ const styles = StyleSheet.create({
   },
   symbol: { fontSize: 34, lineHeight: 40 },
   label: { fontSize: 15, fontWeight: '700' },
+  alias: { fontSize: 11, fontStyle: 'italic', marginTop: -2 },
   badge: {
     paddingHorizontal: 7,
     paddingVertical: 3,

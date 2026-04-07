@@ -168,6 +168,36 @@ def avg_points_per_round(player: Player, games: list[Game]) -> float:
     return total_delta / delta_count
 
 
+DRINK_PRICE = 3.50
+
+
+
+def drinks_balance(player: Player, games: list[Game]) -> float:
+    """
+    Net drinks cost for the player across all games.
+
+    When a player loses, they pay for every other participant's drink:
+        paid = (num_participants - 1) * DRINK_PRICE
+
+    When a player wins or finishes (i.e. does NOT lose), the loser pays
+    one drink for them:
+        received = 1 * DRINK_PRICE
+
+    Balance = total_paid - total_received
+    Positive → net spender; negative → net beneficiary.
+    """
+    total_paid = 0.0
+    total_received = 0.0
+    for game in games:
+        if player.username not in game.participants:
+            continue
+        if game.loser == player.username:
+            total_paid += (len(game.participants) - 1) * DRINK_PRICE
+        else:
+            total_received += DRINK_PRICE
+    return total_paid - total_received
+
+
 def dropout_percentage(player: Player, games: list[Game]) -> float:
     """
     Returns the percentage (0.0–1.0) of rounds where the player drops out.

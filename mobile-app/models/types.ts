@@ -12,6 +12,13 @@ export const TRUMP_LABELS: Record<TrumpSuit, string> = {
   spades: 'Spades',
 };
 
+export const TRUMP_ALIASES: Record<TrumpSuit, string> = {
+  hearts: 'Herzchen',
+  clubs: 'Bäumchen',
+  diamonds: 'Sternchen',
+  spades: 'Schippchen',
+};
+
 export const TRUMP_SYMBOLS: Record<TrumpSuit, string> = {
   hearts: '\u2665',   // ♥
   clubs: '\u2663',    // ♣

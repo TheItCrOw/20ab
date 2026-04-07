@@ -170,6 +170,8 @@ def update_recent_games(selected_players, start_date, end_date, page):
     start_idx = (page - 1) * GAMES_PAGE_SIZE
     current_games = games[start_idx: start_idx + GAMES_PAGE_SIZE]
 
+    _DRINK_PRICE = 3.50
+
     items = []
     for game in current_games:
         pills = html.Div(
@@ -187,10 +189,21 @@ def update_recent_games(selected_players, start_date, end_date, page):
             ],
         )
 
-        date_label = html.Span(
-            str(game.date.date()),
-            className="small-font me-2",
-            style={"color": "var(--text-3)", "whiteSpace": "nowrap"},
+        drinks_cost = (len(game.participants) - 1) * _DRINK_PRICE
+        meta = html.Div(
+            [
+                html.Span(
+                    f"🍺 {game.loser} pays ~{drinks_cost:.2f}€",
+                    className="small-font me-3",
+                    style={"color": "#EF4444", "whiteSpace": "nowrap"},
+                ),
+                html.Span(
+                    str(game.date.date()),
+                    className="small-font",
+                    style={"color": "var(--text-3)", "whiteSpace": "nowrap"},
+                ),
+            ],
+            className="d-flex align-items-center gap-2",
         )
 
         accordion = dmc.Accordion(
@@ -199,7 +212,7 @@ def update_recent_games(selected_players, start_date, end_date, page):
                     children=[
                         dmc.AccordionControl(
                             html.Div(
-                                [pills, date_label],
+                                [pills, meta],
                                 className="d-flex align-items-center justify-content-between w-100",
                             )
                         ),

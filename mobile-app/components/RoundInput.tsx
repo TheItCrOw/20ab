@@ -10,11 +10,12 @@ interface Props {
   game: Game;
   players: Player[];
   trump: TrumpSuit;
+  playerOrder?: string[];
   onSubmit: (deltas: Record<string, number>, sittingOut: Set<string>) => void;
   onBack: () => void;
 }
 
-export default function RoundInput({ game, players, trump, onSubmit, onBack }: Props) {
+export default function RoundInput({ game, players, trump, playerOrder, onSubmit, onBack }: Props) {
   const colorScheme = useColorScheme() ?? 'dark';
   const colors = Colors[colorScheme];
   const accentColor = colorScheme === 'dark' ? accent.dark : accent.light;
@@ -40,6 +41,14 @@ export default function RoundInput({ game, players, trump, onSubmit, onBack }: P
 
   function toggleSitOut(username: string) {
     setSittingOut((prev) => {
+      if (!prev.has(username)) {
+        // Player is about to sit out — ensure at least 2 remain active
+        const activeAfter = game.participants.length - prev.size - 1;
+        if (activeAfter < 2) {
+          Alert.alert('Cannot sit out', 'At least 2 players must participate in every round.');
+          return prev;
+        }
+      }
       const next = new Set(prev);
       next.has(username) ? next.delete(username) : next.add(username);
       return next;
@@ -47,8 +56,9 @@ export default function RoundInput({ game, players, trump, onSubmit, onBack }: P
   }
 
   function handleSubmit() {
-    if (game.participants.every((u) => sittingOut.has(u))) {
-      Alert.alert('Error', 'At least one player must participate.');
+    const activeCount = game.participants.filter((u) => !sittingOut.has(u)).length;
+    if (activeCount < 2) {
+      Alert.alert('Error', 'At least 2 players must participate in every round.');
       return;
     }
     onSubmit(deltas, sittingOut);
@@ -79,7 +89,7 @@ export default function RoundInput({ game, players, trump, onSubmit, onBack }: P
 
       <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>ENTER POINTS</Text>
 
-      {game.participants.map((username) => {
+      {(playerOrder ?? game.participants).map((username) => {
         const currentScore = getCurrentScore(game, username);
         const isSittingOut = sittingOut.has(username);
         const canPlayerSitOut = canSitOut(game, username, trump);

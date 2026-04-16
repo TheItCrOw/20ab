@@ -1,0 +1,63 @@
+{
+  "date": "2026-04-15",
+  "finisher": "Luise",
+  "loser": "Moritz",
+  "rounds": [
+    {
+      "moves": [
+        { "username": "Moritz", "value": 21 },
+        { "username": "Eddie", "value": 17 },
+        { "username": "Luise", "value": 18 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Moritz", "value": 20 },
+        { "username": "Eddie", "value": 14 },
+        { "username": "Luise", "value": 17 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Moritz", "value": 22 },
+        { "username": "Eddie", "value": 8 },
+        { "username": "Luise", "value": 13 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Moritz", "value": 23 },
+        { "username": "Eddie", "value": 4 },
+        { "username": "Luise", "value": 12 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Moritz", "value": 21 },
+        { "username": "Eddie", "value": 9 },
+        { "username": "Luise", "value": 9 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Moritz", "value": 19 },
+        { "username": "Eddie", "value": 5 },
+        { "username": "Luise", "value": 5 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Moritz", "value": 17 },
+        { "username": "Eddie", "value": 10 },
+        { "username": "Luise", "value": 2 }
+      ]
+    },
+    {
+      "moves": [
+        { "username": "Moritz", "value": 16 },
+        { "username": "Eddie", "value": 8 },
+        { "username": "Luise", "value": 0 }
+      ]
+    }
+  ]
+}

@@ -74,7 +74,7 @@ def build_leaderboard_table(players: list[Player], games: list[Game]):
         sort_action="native",
         sort_mode="multi",
         page_action="native",
-        page_size=10,
+        page_size=25,
         cell_selectable=False,
         fixed_columns={"headers": True, "data": 1},
         style_table={"overflowX": "auto", "minWidth": "100%"},

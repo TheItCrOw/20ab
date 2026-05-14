@@ -23,25 +23,24 @@ export default function TabLayout() {
   // (back / home / recents buttons). We must add this to the tab bar so it
   // sits ABOVE those buttons, not behind them.
   const insets = useSafeAreaInsets();
+  const isWeb = Platform.OS === 'web';
   const TAB_BAR_BASE = 58; // visible content height of the tab bar
   const BOTTOM_EXTRA = 10; // extra breathing room above the system nav bar
-  const tabBarHeight = TAB_BAR_BASE + insets.bottom + BOTTOM_EXTRA;
+  const tabBarHeight = isWeb ? undefined : TAB_BAR_BASE + insets.bottom + BOTTOM_EXTRA;
 
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: accentColor,
         tabBarInactiveTintColor: colors.textTertiary,
-        tabBarShowLabel: Platform.OS !== 'web',
+        tabBarShowLabel: !isWeb,
         tabBarStyle: {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
           borderTopWidth: 1,
-          // Height = visible area + system navigation bar
           height: tabBarHeight,
-          // Push tab labels/icons above the system bar
-          paddingBottom: insets.bottom + BOTTOM_EXTRA + 4,
-          paddingTop: 10,
+          paddingBottom: isWeb ? 4 : insets.bottom + BOTTOM_EXTRA + 4,
+          paddingTop: isWeb ? 4 : 10,
           elevation: 0,
         },
         tabBarLabelStyle: {

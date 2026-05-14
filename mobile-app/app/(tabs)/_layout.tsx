@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -31,6 +32,7 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: accentColor,
         tabBarInactiveTintColor: colors.textTertiary,
+        tabBarShowLabel: Platform.OS !== 'web',
         tabBarStyle: {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,

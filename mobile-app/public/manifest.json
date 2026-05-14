@@ -1,0 +1,30 @@
+{
+  "name": "20 ab",
+  "short_name": "20 ab",
+  "description": "Score tracker for the 20 ab card game",
+  "start_url": "/20ab/",
+  "scope": "/20ab/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0C0C16",
+  "theme_color": "#0C0C16",
+  "icons": [
+    {
+      "src": "/20ab/assets/images/icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/20ab/assets/images/adaptive-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/20ab/assets/images/favicon.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    }
+  ]
+}

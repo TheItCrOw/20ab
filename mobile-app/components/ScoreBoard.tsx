@@ -252,6 +252,9 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
       },
       android: { elevation: 2 },
+      web: {
+        boxShadow: '0 2px 8px rgba(40,40,90,0.10)',
+      },
     }),
   },
   sectionLabel: {
@@ -282,6 +285,9 @@ const styles = StyleSheet.create({
         shadowRadius: 10,
       },
       android: { elevation: 8 },
+      web: {
+        boxShadow: '0 6px 10px rgba(0,0,0,0.18)',
+      },
     }),
   },
   rankBadge: { width: 22, marginRight: 10 },

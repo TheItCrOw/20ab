@@ -10,10 +10,18 @@ export default function Root({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
 
-        {/* 
-          Disable body scrolling on web. This makes ScrollView components work closer to how they do on native. 
+        {/* PWA meta tags */}
+        <meta name="theme-color" content="#0C0C16" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="20 ab" />
+        <link rel="apple-touch-icon" href="/20ab/assets/images/icon.png" />
+        <link rel="manifest" href="/20ab/manifest.json" />
+
+        {/*
+          Disable body scrolling on web. This makes ScrollView components work closer to how they do on native.
           However, body scrolling is often nice to have for mobile web. If you want to enable it, remove this line.
         */}
         <ScrollViewStyleReset />
@@ -22,7 +30,10 @@ export default function Root({ children }: { children: React.ReactNode }) {
         <style dangerouslySetInnerHTML={{ __html: responsiveBackground }} />
         {/* Add any additional <head> elements that you want globally available on web... */}
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <script dangerouslySetInnerHTML={{ __html: swRegistration }} />
+      </body>
     </html>
   );
 }
@@ -36,3 +47,11 @@ body {
     background-color: #000;
   }
 }`;
+
+const swRegistration = `
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/20ab/sw.js');
+  });
+}
+`;

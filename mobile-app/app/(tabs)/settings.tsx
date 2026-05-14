@@ -6,6 +6,7 @@ import Colors, { accent } from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import ExportModal from '@/components/ExportModal';
+import PwaInstallBanner from '@/components/PwaInstallBanner';
 
 export default function SettingsScreen() {
   const colorScheme = useColorScheme();
@@ -26,6 +27,8 @@ export default function SettingsScreen() {
   return (
     <>
       <ScrollView style={s.container} contentContainerStyle={s.content}>
+
+        <PwaInstallBanner />
 
         <Text style={s.sectionLabel}>APPEARANCE</Text>
         <View style={s.card}>

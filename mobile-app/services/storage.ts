@@ -113,15 +113,13 @@ export async function seedPlayersIfEmpty(): Promise<void> {
 }
 
 // --- One-time data wipe (keeps players, clears games + active game) ---
+// Disabled: PWA users share the same origin so wiping on version change
+// would delete everyone's history on every deploy.
 
-const WIPE_VERSION_KEY = 'data_wipe_version';
-const CURRENT_WIPE_VERSION = '1';
+// const WIPE_VERSION_KEY = 'data_wipe_version';
+// const CURRENT_WIPE_VERSION = '1';
 
 export async function runDataWipeIfNeeded(): Promise<void> {
-  const version = await AsyncStorage.getItem(WIPE_VERSION_KEY);
-  if (version === CURRENT_WIPE_VERSION) return;
-
-  await AsyncStorage.removeItem(KEYS.GAMES);
-  await AsyncStorage.removeItem(KEYS.ACTIVE_GAME);
-  await AsyncStorage.setItem(WIPE_VERSION_KEY, CURRENT_WIPE_VERSION);
+  // no-op — data wipe disabled
+  return;
 }

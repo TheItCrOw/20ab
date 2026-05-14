@@ -73,42 +73,35 @@ export async function saveGamesToDevice(games: Game[]): Promise<void> {
 
 export async function emailGames(games: Game[]): Promise<boolean> {
   const { filename, content } = buildExportContent(games);
-
-  // Try Web Share API first (works on mobile Safari/Chrome with files)
-  if (navigator.share && navigator.canShare) {
-    const file = new File([content], filename, { type: 'application/json' });
-    const shareData = { files: [file] };
-    if (navigator.canShare(shareData)) {
-      await navigator.share(shareData);
-      return true;
-    }
-  }
-
-  // Fallback: download the file and open a mailto link
   triggerBrowserDownload(filename, content);
+
   const count = games.length;
-  const subject = encodeURIComponent(`20ab Game Export — ${count} game${count !== 1 ? 's' : ''}`);
+  const subject = encodeURIComponent(
+    `20ab Game Export — ${count} game${count !== 1 ? 's' : ''}`
+  );
   const body = encodeURIComponent(
     `Attached: ${count} game${count !== 1 ? 's' : ''} exported from the 20ab Score Tracker.\n\nThe file "${filename}" has been downloaded — please attach it manually.`
   );
-  window.open(`mailto:?subject=${subject}&body=${body}`, '_self');
+  window.location.href = `mailto:?subject=${subject}&body=${body}`;
   return true;
 }
 
 export async function shareGames(games: Game[]): Promise<void> {
   const { filename, content } = buildExportContent(games);
 
-  // Try Web Share API with file (mobile browsers)
-  if (navigator.share && navigator.canShare) {
-    const file = new File([content], filename, { type: 'application/json' });
-    const shareData = { files: [file] };
-    if (navigator.canShare(shareData)) {
-      await navigator.share(shareData);
+  // Try Web Share API with text only (no files — file sharing is unreliable)
+  if (typeof navigator !== 'undefined' && navigator.share) {
+    try {
+      await navigator.share({
+        title: '20ab Game Export',
+        text: content,
+      });
       return;
+    } catch {
+      // User cancelled or API unavailable — fall through to download
     }
   }
 
-  // Fallback: plain download
   triggerBrowserDownload(filename, content);
 }
 

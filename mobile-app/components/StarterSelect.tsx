@@ -22,7 +22,7 @@ export default function StarterSelect({ participants, onSelect, onBack }: Props)
       <RNView style={styles.header}>
         <Text style={[styles.title, { color: colors.text }]}>Who starts?</Text>
         <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-          Tap the player who goes first
+          Tap the player who goes first (not who deals first)
         </Text>
       </RNView>
 

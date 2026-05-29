@@ -25,7 +25,7 @@ interface DashboardGame {
 
 function toDashboardFormat(game: Game): DashboardGame {
   return {
-    date: `${game.date}T00:00:00`,
+    date: game.date,
     finisher: game.finisher ?? '',
     loser: game.loser ?? '',
     rounds: game.rounds.map((round) => ({
@@ -51,7 +51,7 @@ function buildExportContent(games: Game[]): { filename: string; content: string 
   if (games.length === 1) {
     const dashGame = toDashboardFormat(games[0]);
     return {
-      filename: `game_${games[0].date}.json`,
+      filename: `game_${games[0].date.slice(0, 10)}.json`,
       content: JSON.stringify(dashGame, null, 2),
     };
   }
@@ -103,7 +103,7 @@ export async function shareGames(games: Game[]): Promise<void> {
 
 export function formatGameLabel(game: Game): string {
   // "15 Apr 2024 · 4 players"
-  const d = new Date(game.date + 'T00:00:00');
+  const d = new Date(game.date.includes('T') ? game.date : game.date + 'T00:00:00');
   const dateStr = d.toLocaleDateString('en-GB', {
     day: 'numeric',
     month: 'short',

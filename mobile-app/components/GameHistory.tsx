@@ -48,15 +48,17 @@ export default function GameHistory({ game }: Props) {
             ))}
           </RNView>
 
-          {/* Round rows */}
-          {game.rounds.map((round, idx) => (
+          {/* Round rows (newest first) */}
+          {[...game.rounds].reverse().map((round, reverseIdx) => {
+            const idx = game.rounds.length - 1 - reverseIdx;
+            return (
             <RNView
               key={idx}
               style={[
                 styles.row,
                 {
                   borderBottomColor: colors.border,
-                  backgroundColor: idx % 2 !== 0 ? colors.stripeBg : 'transparent',
+                  backgroundColor: reverseIdx % 2 !== 0 ? colors.stripeBg : 'transparent',
                 },
               ]}
             >
@@ -93,7 +95,8 @@ export default function GameHistory({ game }: Props) {
                 );
               })}
             </RNView>
-          ))}
+          );
+          })}
         </RNView>
       </ScrollView>
     </RNView>

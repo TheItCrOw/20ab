@@ -37,7 +37,7 @@ export default function GameDetailScreen() {
   };
 
   function formatDate(d: string) {
-    const [y, m, day] = d.split('-');
+    const [y, m, day] = d.slice(0, 10).split('-');
     return `${day}.${m}.${y}`;
   }
 

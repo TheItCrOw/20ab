@@ -30,7 +30,7 @@ export default function HistoryScreen() {
   );
 
   function formatDate(dateStr: string) {
-    const [y, m, d] = dateStr.split('-');
+    const [y, m, d] = dateStr.slice(0, 10).split('-');
     return `${d}.${m}.${y}`;
   }
 

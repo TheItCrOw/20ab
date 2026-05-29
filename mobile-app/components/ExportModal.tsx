@@ -50,7 +50,9 @@ export default function ExportModal({ visible, onClose }: Props) {
       setSelected(new Set());
       setStatus(null);
       getGames().then((all) => {
-        const completed = all.filter((g) => !g.inProgress);
+        const completed = all
+          .filter((g) => !g.inProgress)
+          .sort((a, b) => b.date.localeCompare(a.date));
         setGames(completed);
       });
     }
@@ -268,7 +270,7 @@ export default function ExportModal({ visible, onClose }: Props) {
           Exporting {count} game{count !== 1 ? 's' : ''} as{' '}
           <Text style={s.mono}>
             {count === 1
-              ? `game_${selectedGames()[0]?.date}.json`
+              ? `game_${selectedGames()[0]?.date.slice(0, 10)}.json`
               : `20ab_export_${new Date().toISOString().slice(0, 10)}.json`}
           </Text>
         </Text>

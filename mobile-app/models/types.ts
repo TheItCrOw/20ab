@@ -50,7 +50,7 @@ export interface Round {
 
 export interface Game {
   id: string;
-  date: string; // ISO date string YYYY-MM-DD
+  date: string; // ISO datetime string YYYY-MM-DDTHH:mm:ss
   rounds: Round[];
   /** The player who finished first (lowest score, reached ≤0). */
   finisher: string | null;
@@ -71,7 +71,7 @@ export const MIN_DELTA = -5;
 export const MAX_DELTA = 5;
 export const SIT_OUT_PENALTY = 1;
 /** A player cannot sit out if their score is at or below this threshold. */
-export const SIT_OUT_THRESHOLD = 6;
+export const SIT_OUT_THRESHOLD = 7;
 /** Delta applied when a player wins no tricks in a round. */
 export const NO_TRICK_DELTA = 5;
 export const SCORE_WIN = 0;

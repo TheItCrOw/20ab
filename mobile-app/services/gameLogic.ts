@@ -14,7 +14,7 @@ import * as Crypto from 'expo-crypto';
 export function createGame(participantUsernames: string[], dealOrder?: string[]): Game {
   return {
     id: Crypto.randomUUID(),
-    date: new Date().toISOString().split('T')[0],
+    date: new Date().toISOString().slice(0, 19),
     rounds: [],
     finisher: null,
     loser: null,
@@ -149,7 +149,7 @@ export function undoLastRound(game: Game): Game {
 /** Convert a game to the JSON format compatible with the dashboard data files. */
 export function toExportFormat(game: Game): object {
   return {
-    date: game.date,
+    date: game.date.includes('T') ? game.date : `${game.date}T00:00:00`,
     winner: game.finisher,
     loser: game.loser,
     rounds: game.rounds.map((r) => ({

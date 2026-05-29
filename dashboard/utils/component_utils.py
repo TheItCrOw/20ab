@@ -12,6 +12,7 @@ from utils.statistics_utils import (
     win_percentage, finish_percentage, loss_percentage,
     avg_points_per_round, dropout_percentage,
     avg_final_score, current_streak, drinks_balance,
+    avg_loss_balance,
 )
 
 
@@ -34,6 +35,7 @@ def build_leaderboard_table(players: list[Player], games: list[Game]):
         streak_type, streak_len = current_streak(player, player_games)
         streak_str = f"{streak_type}{streak_len}" if streak_len > 0 else "—"
         net_drinks = drinks_balance(player, player_games)
+        avg_loss_bal = avg_loss_balance(player, player_games)
 
         rows.append({
             "Player": player.username,
@@ -49,6 +51,7 @@ def build_leaderboard_table(players: list[Player], games: list[Game]):
             "AvgFinal": avg_fs,
             "Streak": streak_str,
             "DrinksBalance": net_drinks,
+            "AvgLossBal": avg_loss_bal,
         })
 
     columns = [
@@ -64,6 +67,7 @@ def build_leaderboard_table(players: list[Player], games: list[Game]):
         {"name": "Dropout %", "id": "Dropout%", "type": "numeric", "format": {"specifier": ".1f"}},
         {"name": "Avg Final Score", "id": "AvgFinal", "type": "numeric", "format": {"specifier": ".1f"}},
         {"name": "Streak", "id": "Streak"},
+        {"name": "Avg Loss Bal (€)", "id": "AvgLossBal", "type": "numeric", "format": {"specifier": ".2f"}},
         {"name": "🍺 Balance (€)", "id": "DrinksBalance", "type": "numeric", "format": {"specifier": "+.2f"}},
     ]
 

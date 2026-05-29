@@ -198,6 +198,21 @@ def drinks_balance(player: Player, games: list[Game]) -> float:
     return total_paid - total_received
 
 
+def avg_loss_balance(player: Player, games: list[Game]) -> float:
+    """
+    Average amount the player had to pay per loss.
+    When losing, they pay (num_participants - 1) * DRINK_PRICE.
+    This averages that cost across all their losses.
+    """
+    loss_costs = []
+    for game in games:
+        if game.loser == player.username:
+            loss_costs.append((len(game.participants) - 1) * DRINK_PRICE)
+    if not loss_costs:
+        return 0.0
+    return sum(loss_costs) / len(loss_costs)
+
+
 def dropout_percentage(player: Player, games: list[Game]) -> float:
     """
     Returns the percentage (0.0–1.0) of rounds where the player drops out.

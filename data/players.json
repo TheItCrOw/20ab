@@ -4,6 +4,10 @@
     "name": "Agnes Franz"
   },
   {
+    "username": "Luca",
+    "name": "Luca Dressbach"
+  },
+  {
     "username": "Felix",
     "name": "Felix Oberle"
   },
@@ -46,5 +50,9 @@
   {
     "username": "Eddie",
     "name": "Edgar Bittner"
+  },
+  {
+    "username": "Bene",
+    "name": "Bene Unknown"
   }
 ]

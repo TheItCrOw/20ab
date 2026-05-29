@@ -1,0 +1,367 @@
+{
+  "date": "2026-05-25T00:00:00",
+  "finisher": "Agnes",
+  "loser": "Bene",
+  "rounds": [
+    {
+      "moves": [
+        {
+          "username": "Agnes",
+          "value": 19
+        },
+        {
+          "username": "Felix",
+          "value": 18
+        },
+        {
+          "username": "Celine",
+          "value": 18
+        },
+        {
+          "username": "Bene",
+          "value": 25
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Agnes",
+          "value": 17
+        },
+        {
+          "username": "Felix",
+          "value": 20
+        },
+        {
+          "username": "Celine",
+          "value": 14
+        },
+        {
+          "username": "Bene",
+          "value": 21
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Agnes",
+          "value": 18
+        },
+        {
+          "username": "Felix",
+          "value": 19
+        },
+        {
+          "username": "Celine",
+          "value": 10
+        },
+        {
+          "username": "Bene",
+          "value": 26
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Agnes",
+          "value": 13
+        },
+        {
+          "username": "Felix",
+          "value": 24
+        },
+        {
+          "username": "Celine",
+          "value": 15
+        },
+        {
+          "username": "Bene",
+          "value": 31
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Agnes",
+          "value": 14
+        },
+        {
+          "username": "Felix",
+          "value": 21
+        },
+        {
+          "username": "Celine",
+          "value": 13
+        },
+        {
+          "username": "Bene",
+          "value": 32
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Agnes",
+          "value": 12
+        },
+        {
+          "username": "Felix",
+          "value": 26
+        },
+        {
+          "username": "Celine",
+          "value": 12
+        },
+        {
+          "username": "Bene",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Agnes",
+          "value": 14
+        },
+        {
+          "username": "Felix",
+          "value": 22
+        },
+        {
+          "username": "Celine",
+          "value": 8
+        },
+        {
+          "username": "Bene",
+          "value": 28
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Agnes",
+          "value": 12
+        },
+        {
+          "username": "Felix",
+          "value": 14
+        },
+        {
+          "username": "Celine",
+          "value": 10
+        },
+        {
+          "username": "Bene",
+          "value": 38
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Agnes",
+          "value": 10
+        },
+        {
+          "username": "Felix",
+          "value": 13
+        },
+        {
+          "username": "Celine",
+          "value": 9
+        },
+        {
+          "username": "Bene",
+          "value": 37
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Agnes",
+          "value": 9
+        },
+        {
+          "username": "Felix",
+          "value": 12
+        },
+        {
+          "username": "Celine",
+          "value": 7
+        },
+        {
+          "username": "Bene",
+          "value": 36
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Agnes",
+          "value": 10
+        },
+        {
+          "username": "Felix",
+          "value": 10
+        },
+        {
+          "username": "Celine",
+          "value": 5
+        },
+        {
+          "username": "Bene",
+          "value": 35
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Agnes",
+          "value": 8
+        },
+        {
+          "username": "Felix",
+          "value": 11
+        },
+        {
+          "username": "Celine",
+          "value": 10
+        },
+        {
+          "username": "Bene",
+          "value": 32
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Agnes",
+          "value": 9
+        },
+        {
+          "username": "Felix",
+          "value": 8
+        },
+        {
+          "username": "Celine",
+          "value": 9
+        },
+        {
+          "username": "Bene",
+          "value": 31
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Agnes",
+          "value": 10
+        },
+        {
+          "username": "Felix",
+          "value": 3
+        },
+        {
+          "username": "Celine",
+          "value": 10
+        },
+        {
+          "username": "Bene",
+          "value": 36
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Agnes",
+          "value": 9
+        },
+        {
+          "username": "Felix",
+          "value": 8
+        },
+        {
+          "username": "Celine",
+          "value": 8
+        },
+        {
+          "username": "Bene",
+          "value": 34
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Agnes",
+          "value": 5
+        },
+        {
+          "username": "Felix",
+          "value": 10
+        },
+        {
+          "username": "Celine",
+          "value": 4
+        },
+        {
+          "username": "Bene",
+          "value": 32
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Agnes",
+          "value": 1
+        },
+        {
+          "username": "Felix",
+          "value": 8
+        },
+        {
+          "username": "Celine",
+          "value": 2
+        },
+        {
+          "username": "Bene",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Agnes",
+          "value": -2
+        },
+        {
+          "username": "Felix",
+          "value": 6
+        },
+        {
+          "username": "Celine",
+          "value": 7
+        },
+        {
+          "username": "Bene",
+          "value": 35
+        }
+      ]
+    }
+  ]
+}

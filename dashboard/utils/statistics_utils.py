@@ -192,9 +192,9 @@ def drinks_balance(player: Player, games: list[Game]) -> float:
         if player.username not in game.participants:
             continue
         if game.loser == player.username:
-            total_paid += (len(game.participants) - 1) * DRINK_PRICE
+            total_paid -= (len(game.participants) - 1) * DRINK_PRICE
         else:
-            total_received += DRINK_PRICE
+            total_received -= DRINK_PRICE
     return total_paid - total_received
 
 

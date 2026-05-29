@@ -1,0 +1,103 @@
+{
+  "date": "2026-05-25T00:00:00",
+  "finisher": "Celine",
+  "loser": "Felix",
+  "rounds": [
+    {
+      "moves": [
+        {
+          "username": "Agnes",
+          "value": 30
+        },
+        {
+          "username": "Felix",
+          "value": 22
+        },
+        {
+          "username": "Celine",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Agnes",
+          "value": 28
+        },
+        {
+          "username": "Felix",
+          "value": 19
+        },
+        {
+          "username": "Celine",
+          "value": 11
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Agnes",
+          "value": 26
+        },
+        {
+          "username": "Felix",
+          "value": 24
+        },
+        {
+          "username": "Celine",
+          "value": 8
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Agnes",
+          "value": 22
+        },
+        {
+          "username": "Felix",
+          "value": 25
+        },
+        {
+          "username": "Celine",
+          "value": 7
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Agnes",
+          "value": 14
+        },
+        {
+          "username": "Felix",
+          "value": 35
+        },
+        {
+          "username": "Celine",
+          "value": 5
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Agnes",
+          "value": 19
+        },
+        {
+          "username": "Felix",
+          "value": 40
+        },
+        {
+          "username": "Celine",
+          "value": 0
+        }
+      ]
+    }
+  ]
+}

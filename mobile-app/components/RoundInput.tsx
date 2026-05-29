@@ -3,7 +3,7 @@ import { StyleSheet, TouchableOpacity, Alert, ScrollView, View as RNView, Platfo
 import { Text } from './Themed';
 import Colors, { accent, win, loss } from '@/constants/Colors';
 import { useColorScheme } from './useColorScheme';
-import { Game, Player, TrumpSuit, MIN_DELTA, MAX_DELTA, TRUMP_SYMBOLS, TRUMP_LABELS, TRUMP_COLORS } from '@/models/types';
+import { Game, Player, TrumpSuit, MIN_DELTA, MAX_DELTA, NO_TRICK_DELTA, TRUMP_SYMBOLS, TRUMP_LABELS, TRUMP_COLORS } from '@/models/types';
 import { getCurrentScore, canSitOut, getMultiplier } from '@/services/gameLogic';
 
 interface Props {
@@ -31,6 +31,7 @@ export default function RoundInput({ game, players, trump, playerOrder, onSubmit
     return init;
   });
   const [sittingOut, setSittingOut] = useState<Set<string>>(new Set());
+  const [noTrick, setNoTrick] = useState<Set<string>>(new Set());
 
   function adjustDelta(username: string, change: number) {
     setDeltas((prev) => {
@@ -50,7 +51,35 @@ export default function RoundInput({ game, players, trump, playerOrder, onSubmit
         }
       }
       const next = new Set(prev);
-      next.has(username) ? next.delete(username) : next.add(username);
+      if (next.has(username)) {
+        next.delete(username);
+      } else {
+        next.add(username);
+        // Clear no-trick if active
+        setNoTrick((nt) => {
+          const nnt = new Set(nt);
+          nnt.delete(username);
+          return nnt;
+        });
+      }
+      return next;
+    });
+  }
+
+  function toggleNoTrick(username: string) {
+    setNoTrick((prev) => {
+      const next = new Set(prev);
+      if (next.has(username)) {
+        next.delete(username);
+      } else {
+        next.add(username);
+        // Clear sit-out if active
+        setSittingOut((s) => {
+          const ns = new Set(s);
+          ns.delete(username);
+          return ns;
+        });
+      }
       return next;
     });
   }
@@ -61,7 +90,10 @@ export default function RoundInput({ game, players, trump, playerOrder, onSubmit
       Alert.alert('Error', 'At least 2 players must participate in every round.');
       return;
     }
-    onSubmit(deltas, sittingOut);
+    // Force delta to NO_TRICK_DELTA for no-trick players
+    const finalDeltas = { ...deltas };
+    noTrick.forEach((u) => { finalDeltas[u] = NO_TRICK_DELTA; });
+    onSubmit(finalDeltas, sittingOut);
   }
 
   return (
@@ -92,11 +124,14 @@ export default function RoundInput({ game, players, trump, playerOrder, onSubmit
       {(playerOrder ?? game.participants).map((username) => {
         const currentScore = getCurrentScore(game, username);
         const isSittingOut = sittingOut.has(username);
+        const isNoTrick = noTrick.has(username);
         const canPlayerSitOut = canSitOut(game, username, trump);
         const delta = deltas[username] ?? 0;
         const effectiveDelta = delta * multiplier;
         const previewScore = isSittingOut
           ? currentScore + 1 * multiplier
+          : isNoTrick
+          ? currentScore + NO_TRICK_DELTA * multiplier
           : currentScore + effectiveDelta;
         const scoreImproves = previewScore < currentScore;
         const scoreWorsens = previewScore > currentScore;
@@ -107,7 +142,7 @@ export default function RoundInput({ game, players, trump, playerOrder, onSubmit
             style={[
               styles.playerCard,
               { backgroundColor: colors.surface, borderColor: isSittingOut ? colors.border : colors.border },
-              isSittingOut && { opacity: 0.55 },
+              (isSittingOut || isNoTrick) && { opacity: 0.55 },
             ]}
           >
             {/* Player header */}
@@ -122,28 +157,44 @@ export default function RoundInput({ game, players, trump, playerOrder, onSubmit
                 </Text>
               </RNView>
 
-              {!isClubs && canPlayerSitOut ? (
+              <RNView style={styles.headerButtons}>
                 <TouchableOpacity
                   style={[
                     styles.sitOutBtn,
                     {
-                      backgroundColor: isSittingOut ? accentColor : 'transparent',
-                      borderColor: accentColor,
+                      backgroundColor: isNoTrick ? lossColor : 'transparent',
+                      borderColor: lossColor,
                     },
                   ]}
-                  onPress={() => toggleSitOut(username)}
+                  onPress={() => toggleNoTrick(username)}
                 >
-                  <Text style={{ color: isSittingOut ? '#fff' : accentColor, fontSize: 12, fontWeight: '700' }}>
-                    {isSittingOut ? 'SITTING OUT' : 'SIT OUT'}
+                  <Text style={{ color: isNoTrick ? '#fff' : lossColor, fontSize: 12, fontWeight: '700' }}>
+                    {isNoTrick ? 'NO TRICK' : 'NO TRICK'}
                   </Text>
                 </TouchableOpacity>
-              ) : !isClubs && !canPlayerSitOut ? (
-                <Text style={[styles.mustPlayLabel, { color: colors.textTertiary }]}>must play</Text>
-              ) : null}
+                {!isClubs && canPlayerSitOut ? (
+                  <TouchableOpacity
+                    style={[
+                      styles.sitOutBtn,
+                      {
+                        backgroundColor: isSittingOut ? accentColor : 'transparent',
+                        borderColor: accentColor,
+                      },
+                    ]}
+                    onPress={() => toggleSitOut(username)}
+                  >
+                    <Text style={{ color: isSittingOut ? '#fff' : accentColor, fontSize: 12, fontWeight: '700' }}>
+                      {isSittingOut ? 'SITTING OUT' : 'SIT OUT'}
+                    </Text>
+                  </TouchableOpacity>
+                ) : !isClubs && !canPlayerSitOut ? (
+                  <Text style={[styles.mustPlayLabel, { color: colors.textTertiary }]}>must play</Text>
+                ) : null}
+              </RNView>
             </RNView>
 
             {/* Delta controls */}
-            {!isSittingOut && (
+            {!isSittingOut && !isNoTrick && (
               <RNView style={styles.deltaRow}>
                 <TouchableOpacity
                   style={[styles.deltaBtn, { backgroundColor: lossColor }]}
@@ -182,6 +233,12 @@ export default function RoundInput({ game, players, trump, playerOrder, onSubmit
             {isSittingOut && (
               <Text style={[styles.sitOutPenalty, { color: colors.textSecondary }]}>
                 +{1 * multiplier} point penalty
+              </Text>
+            )}
+
+            {isNoTrick && (
+              <Text style={[styles.sitOutPenalty, { color: lossColor }]}>
+                +{NO_TRICK_DELTA * multiplier} points (no trick)
               </Text>
             )}
           </RNView>
@@ -239,6 +296,7 @@ const styles = StyleSheet.create({
     }),
   },
   playerHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
+  headerButtons: { flexDirection: 'row', gap: 6 },
   playerName: { fontSize: 16, fontWeight: '700' },
   scorePreview: { fontSize: 12, fontWeight: '500', marginTop: 2 },
   sitOutBtn: { borderWidth: 1.5, borderRadius: 6, paddingVertical: 5, paddingHorizontal: 10 },

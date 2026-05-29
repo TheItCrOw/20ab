@@ -28,7 +28,7 @@ export default function TrumpSelector({ onSelect, roundNumber, currentPlayer }: 
           {currentPlayer}'s turn
         </Text>
       )}
-      <Text style={[styles.title, { color: colors.text }]}>Choose Trump</Text>
+      {/* <Text style={[styles.title, { color: colors.text }]}>Choose Trump</Text> */}
 
       <RNView style={styles.grid}>
         {SUITS.map((suit) => (
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '800',
     textAlign: 'center',
-    marginBottom: 2,
+    marginBottom: 12,
   },
   title: {
     fontSize: 20,

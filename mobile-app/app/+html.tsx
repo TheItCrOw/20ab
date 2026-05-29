@@ -49,7 +49,7 @@ body {
 }`;
 
 const swRegistration = `
-if ('serviceWorker' in navigator) {
+if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('/20ab/sw.js');
   });

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useState } from 'react';
 import {
   StyleSheet,
   ScrollView,
@@ -6,7 +6,7 @@ import {
   Modal,
   View as RNView,
 } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 
 import { Text } from '@/components/Themed';
@@ -54,6 +54,24 @@ export default function GameScreen() {
   const [playerOrder, setPlayerOrder] = useState<string[]>([]);
   const [pendingParticipants, setPendingParticipants] = useState<string[]>([]);
   const [starter, setStarter] = useState<string | null>(null);
+
+  const navigation = useNavigation();
+  const isActiveGame = phase === 'trump_select' || phase === 'score_input';
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: isActiveGame
+        ? () => (
+            <TouchableOpacity
+              style={{ paddingHorizontal: 12 }}
+              onPress={() => setShowAbandonModal(true)}
+            >
+              <Text style={{ color: lossColor, fontSize: 14, fontWeight: '600' }}>Abandon</Text>
+            </TouchableOpacity>
+          )
+        : undefined,
+    });
+  }, [navigation, isActiveGame, lossColor]);
 
   useFocusEffect(
     useCallback(() => {
@@ -250,22 +268,16 @@ export default function GameScreen() {
 
         {/* Fixed bottom: action buttons + trump selector */}
         <RNView style={[styles.bottomArea, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
-          <RNView style={styles.actions}>
-            {game.rounds.length > 0 && (
+          {game.rounds.length > 0 && (
+            <RNView style={styles.actions}>
               <TouchableOpacity
                 style={[styles.actionBtn, { borderColor: accentColor }]}
                 onPress={handleUndo}
               >
                 <Text style={{ color: accentColor, fontWeight: '600' }}>Undo</Text>
               </TouchableOpacity>
-            )}
-            <TouchableOpacity
-              style={[styles.actionBtn, { borderColor: lossColor }]}
-              onPress={() => setShowAbandonModal(true)}
-            >
-              <Text style={{ color: lossColor, fontWeight: '600' }}>Abandon</Text>
-            </TouchableOpacity>
-          </RNView>
+            </RNView>
+          )}
 
           <TrumpSelector
             roundNumber={game.rounds.length + 1}

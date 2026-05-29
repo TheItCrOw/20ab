@@ -59,6 +59,8 @@ export interface Game {
   /** All players that are neither finisher nor loser. */
   winners: string[];
   participants: string[];
+  /** Fixed seating order that determines turn rotation. */
+  dealOrder?: string[];
   inProgress: boolean;
 }
 

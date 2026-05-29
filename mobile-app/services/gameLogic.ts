@@ -11,7 +11,7 @@ import {
 } from '../models/types';
 import * as Crypto from 'expo-crypto';
 
-export function createGame(participantUsernames: string[]): Game {
+export function createGame(participantUsernames: string[], dealOrder?: string[]): Game {
   return {
     id: Crypto.randomUUID(),
     date: new Date().toISOString().split('T')[0],
@@ -20,8 +20,15 @@ export function createGame(participantUsernames: string[]): Game {
     loser: null,
     winners: [],
     participants: participantUsernames,
+    dealOrder: dealOrder ?? participantUsernames,
     inProgress: true,
   };
+}
+
+/** Get the username of the player whose turn it is for a given round. */
+export function getCurrentTurnPlayer(game: Game, roundNumber: number): string {
+  const order = game.dealOrder ?? game.participants;
+  return order[(roundNumber - 1) % order.length];
 }
 
 /** Get the current score for a player (from latest round, or STARTING_SCORE). */

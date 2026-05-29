@@ -26,6 +26,7 @@ import {
   addRound,
   undoLastRound,
   buildRoundMoves,
+  getCurrentTurnPlayer,
 } from '@/services/gameLogic';
 import PlayerSelector from '@/components/PlayerSelector';
 import ScoreBoard from '@/components/ScoreBoard';
@@ -33,8 +34,10 @@ import TrumpSelector from '@/components/TrumpSelector';
 import RoundInput from '@/components/RoundInput';
 import GameHistory from '@/components/GameHistory';
 import GameFinished from '@/components/GameFinished';
+import StarterSelect from '@/components/StarterSelect';
+import OrderSetup from '@/components/OrderSetup';
 
-type Phase = 'loading' | 'no_game' | 'trump_select' | 'score_input' | 'game_finished';
+type Phase = 'loading' | 'no_game' | 'starter_select' | 'order_setup' | 'trump_select' | 'score_input' | 'game_finished';
 
 export default function GameScreen() {
   const colorScheme = useColorScheme() ?? 'dark';
@@ -49,6 +52,8 @@ export default function GameScreen() {
   const [showAbandonModal, setShowAbandonModal] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [playerOrder, setPlayerOrder] = useState<string[]>([]);
+  const [pendingParticipants, setPendingParticipants] = useState<string[]>([]);
+  const [starter, setStarter] = useState<string | null>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -71,15 +76,28 @@ export default function GameScreen() {
     } else if (!activeGame.inProgress) {
       setPhase('game_finished');
     } else {
-      setPlayerOrder(activeGame.participants);
+      setPlayerOrder(activeGame.dealOrder ?? activeGame.participants);
       setPhase('trump_select');
     }
   }
 
-  async function handleStartGame(selectedUsernames: string[]) {
-    const newGame = createGame(selectedUsernames);
+  function handleStartGame(selectedUsernames: string[]) {
+    setPendingParticipants(selectedUsernames);
+    setPhase('starter_select');
+  }
+
+  function handleStarterSelected(starterUsername: string) {
+    setStarter(starterUsername);
+    // Place starter first in the initial order
+    const rest = pendingParticipants.filter((u) => u !== starterUsername);
+    setPlayerOrder([starterUsername, ...rest]);
+    setPhase('order_setup');
+  }
+
+  async function handleOrderConfirmed(dealOrder: string[]) {
+    const newGame = createGame(pendingParticipants, dealOrder);
     setGame(newGame);
-    setPlayerOrder(selectedUsernames);
+    setPlayerOrder(dealOrder);
     await saveActiveGame(newGame);
     setPhase('trump_select');
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -128,6 +146,8 @@ export default function GameScreen() {
     setGame(null);
     setSelectedTrump(null);
     setPlayerOrder([]);
+    setPendingParticipants([]);
+    setStarter(null);
     await saveActiveGame(null);
     setPhase('no_game');
   }
@@ -136,6 +156,8 @@ export default function GameScreen() {
     setGame(null);
     setSelectedTrump(null);
     setPlayerOrder([]);
+    setPendingParticipants([]);
+    setStarter(null);
     await saveActiveGame(null);
     setPhase('no_game');
   }
@@ -152,6 +174,27 @@ export default function GameScreen() {
 
   if (phase === 'no_game') {
     return <PlayerSelector players={players} onStart={handleStartGame} />;
+  }
+
+  if (phase === 'starter_select') {
+    return (
+      <StarterSelect
+        participants={pendingParticipants}
+        onSelect={handleStarterSelected}
+        onBack={() => setPhase('no_game')}
+      />
+    );
+  }
+
+  if (phase === 'order_setup' && starter) {
+    return (
+      <OrderSetup
+        initialOrder={playerOrder}
+        starter={starter}
+        onConfirm={handleOrderConfirmed}
+        onBack={() => setPhase('starter_select')}
+      />
+    );
   }
 
   if (phase === 'game_finished' && game) {
@@ -226,6 +269,7 @@ export default function GameScreen() {
 
           <TrumpSelector
             roundNumber={game.rounds.length + 1}
+            currentPlayer={getCurrentTurnPlayer(game, game.rounds.length + 1)}
             onSelect={handleTrumpSelected}
           />
         </RNView>

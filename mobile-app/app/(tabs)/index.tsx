@@ -55,7 +55,6 @@ export default function GameScreen() {
   const [phase, setPhase] = useState<Phase>('loading');
   const [selectedTrump, setSelectedTrump] = useState<TrumpSuit | null>(null);
   const [showAbandonModal, setShowAbandonModal] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
   const [playerOrder, setPlayerOrder] = useState<string[]>([]);
   const [pendingParticipants, setPendingParticipants] = useState<string[]>([]);
   const [starter, setStarter] = useState<string | null>(null);
@@ -463,8 +462,8 @@ export default function GameScreen() {
         </Modal>
 
         {/* Scrollable top: scoreboard + history */}
-        <ScrollView contentContainerStyle={styles.content} scrollEnabled={!isDragging}>
-          <ScoreBoard game={game} playerOrder={playerOrder} onReorder={setPlayerOrder} onDragActive={setIsDragging} />
+        <ScrollView contentContainerStyle={styles.content}>
+          <ScoreBoard game={game} playerOrder={playerOrder} />
           {game.rounds.length > 0 && <GameHistory game={game} />}
         </ScrollView>
 

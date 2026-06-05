@@ -3,7 +3,7 @@ import { StyleSheet, TouchableOpacity, Alert, ScrollView, View as RNView, Platfo
 import { Text } from './Themed';
 import Colors, { accent, win, loss } from '@/constants/Colors';
 import { useColorScheme } from './useColorScheme';
-import { Game, Player, TrumpSuit, MIN_DELTA, MAX_DELTA, NO_TRICK_DELTA, TRUMP_SYMBOLS, TRUMP_LABELS, TRUMP_COLORS } from '@/models/types';
+import { Game, Player, TrumpSuit, MIN_DELTA, NO_TRICK_DELTA, TRUMP_SYMBOLS, TRUMP_LABELS, TRUMP_COLORS } from '@/models/types';
 import { getCurrentScore, canSitOut, getMultiplier, getTiebreakScore } from '@/services/gameLogic';
 
 interface Props {
@@ -41,9 +41,22 @@ export default function RoundInput({ game, players, trump, playerOrder, onSubmit
   const [sittingOut, setSittingOut] = useState<Set<string>>(new Set());
   const [noTrick, setNoTrick] = useState<Set<string>>(new Set());
 
+  // Total tricks assigned: sum of deltas for active, non-no-trick players (negative = tricks won)
+  const totalActiveDelta = participantList
+    .filter((u) => !sittingOut.has(u) && !noTrick.has(u))
+    .reduce((sum, u) => sum + (deltas[u] ?? 0), 0);
+  const tricksRemaining = 5 + totalActiveDelta; // e.g. totalActiveDelta=-3 → 2 remaining
+
   function adjustDelta(username: string, change: number) {
     setDeltas((prev) => {
-      const next = Math.max(MIN_DELTA, Math.min(MAX_DELTA, (prev[username] ?? 0) + change));
+      const next = Math.max(MIN_DELTA, Math.min(0, (prev[username] ?? 0) + change));
+      // Enforce 5-trick limit when assigning more tricks (decreasing delta)
+      if (change < 0) {
+        const newTotal = participantList
+          .filter((u) => !sittingOut.has(u) && !noTrick.has(u))
+          .reduce((sum, u) => sum + (u === username ? next : (prev[u] ?? 0)), 0);
+        if (newTotal < -5) return prev;
+      }
       return { ...prev, [username]: next };
     });
   }
@@ -127,9 +140,14 @@ export default function RoundInput({ game, players, trump, playerOrder, onSubmit
         </RNView>
       </RNView>
 
-      <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>
-        {tiebreakMode ? 'TIEBREAKER — ENTER POINTS' : 'ENTER POINTS'}
-      </Text>
+      <RNView style={styles.sectionRow}>
+        <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>
+          {tiebreakMode ? 'TIEBREAKER — ENTER POINTS' : 'ENTER POINTS'}
+        </Text>
+        <Text style={[styles.tricksLabel, { color: tricksRemaining === 0 ? lossColor : colors.textSecondary }]}>
+          {5 - tricksRemaining}/5 tricks
+        </Text>
+      </RNView>
 
       {(playerOrder ?? participantList).map((username) => {
         const currentScore = getScore(username);
@@ -207,9 +225,9 @@ export default function RoundInput({ game, players, trump, playerOrder, onSubmit
             {!isSittingOut && !isNoTrick && (
               <RNView style={styles.deltaRow}>
                 <TouchableOpacity
-                  style={[styles.deltaBtn, { backgroundColor: lossColor }]}
+                  style={[styles.deltaBtn, { backgroundColor: lossColor, opacity: (delta <= MIN_DELTA || tricksRemaining <= 0) ? 0.35 : 1 }]}
                   onPress={() => adjustDelta(username, -1)}
-                  disabled={delta <= MIN_DELTA}
+                  disabled={delta <= MIN_DELTA || tricksRemaining <= 0}
                 >
                   <Text style={styles.deltaBtnText}>−</Text>
                 </TouchableOpacity>
@@ -230,13 +248,14 @@ export default function RoundInput({ game, players, trump, playerOrder, onSubmit
                   )}
                 </RNView>
 
-                <TouchableOpacity
-                  style={[styles.deltaBtn, { backgroundColor: winColor }]}
-                  onPress={() => adjustDelta(username, 1)}
-                  disabled={delta >= MAX_DELTA}
-                >
-                  <Text style={styles.deltaBtnText}>+</Text>
-                </TouchableOpacity>
+                {delta < 0 && (
+                  <TouchableOpacity
+                    style={[styles.deltaBtn, { backgroundColor: winColor }]}
+                    onPress={() => adjustDelta(username, 1)}
+                  >
+                    <Text style={styles.deltaBtnText}>+</Text>
+                  </TouchableOpacity>
+                )}
               </RNView>
             )}
 
@@ -289,11 +308,20 @@ const styles = StyleSheet.create({
   trumpSymbol: { fontSize: 36 },
   trumpName: { fontSize: 17, fontWeight: '700' },
   trumpHint: { fontSize: 12, fontWeight: '600', marginTop: 2 },
+  sectionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
   sectionLabel: {
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 1.4,
-    marginBottom: 10,
+  },
+  tricksLabel: {
+    fontSize: 12,
+    fontWeight: '700',
   },
   playerCard: {
     borderRadius: 12,

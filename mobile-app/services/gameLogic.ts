@@ -2,6 +2,7 @@ import {
   Game,
   Move,
   Round,
+  Tiebreak,
   TrumpSuit,
   STARTING_SCORE,
   SIT_OUT_PENALTY,
@@ -119,15 +120,33 @@ export function addRound(game: Game, trump: TrumpSuit, moves: Move[]): Game {
   if (gameEnded) {
     const sorted = Object.entries(scores).sort((a, b) => a[1] - b[1]);
     const finisher = sorted[0][0]; // lowest score
-    const loser = sorted[sorted.length - 1][0]; // highest score
-    const winners = sorted
-      .slice(1, -1)
-      .map(([username]) => username);
+    const maxScore = sorted[sorted.length - 1][1];
+    const tiedForLast = sorted.filter(([, s]) => s === maxScore);
 
     updatedGame.finisher = finisher;
-    updatedGame.loser = loser;
-    updatedGame.winners = winners;
-    updatedGame.inProgress = false;
+
+    if (tiedForLast.length > 1) {
+      // Draw — tiebreaker needed between tied players
+      updatedGame.winners = sorted
+        .slice(1)
+        .filter(([, s]) => s !== maxScore)
+        .map(([username]) => username);
+      updatedGame.tiebreak = {
+        players: tiedForLast.map(([username]) => username),
+        rounds: [],
+        starter: '',
+      };
+      // Keep inProgress true so the tiebreaker can be played
+    } else {
+      const loser = sorted[sorted.length - 1][0]; // highest score
+      const winners = sorted
+        .slice(1, -1)
+        .map(([username]) => username);
+
+      updatedGame.loser = loser;
+      updatedGame.winners = winners;
+      updatedGame.inProgress = false;
+    }
   }
 
   return updatedGame;
@@ -142,8 +161,101 @@ export function undoLastRound(game: Game): Game {
     finisher: null,
     loser: null,
     winners: [],
+    tiebreak: undefined,
     inProgress: true,
   };
+}
+
+// ── Tiebreak helpers ─────────────────────────────────────────────────
+
+/** Get a tiebreak player's score (cumulative delta from tiebreak rounds, starting at 0). */
+export function getTiebreakScore(game: Game, username: string): number {
+  if (!game.tiebreak) return 0;
+  for (let i = game.tiebreak.rounds.length - 1; i >= 0; i--) {
+    const move = game.tiebreak.rounds[i].moves.find((m) => m.username === username);
+    if (move) return move.value;
+  }
+  return 0;
+}
+
+/** Build moves for a tiebreak round (no sitting out allowed). */
+export function buildTiebreakMoves(
+  game: Game,
+  trump: TrumpSuit,
+  deltas: Record<string, number>
+): Move[] {
+  if (!game.tiebreak) throw new Error('No tiebreak in progress');
+  const multiplier = getMultiplier(trump);
+
+  return game.tiebreak.players.map((username): Move => {
+    const currentScore = getTiebreakScore(game, username);
+    const delta = deltas[username] ?? 0;
+    const adjustedDelta = delta * multiplier;
+    return {
+      username,
+      value: currentScore + adjustedDelta,
+      delta,
+      satOut: false,
+    };
+  });
+}
+
+/** Add a round to the tiebreak. Resolves the loser when scores diverge. */
+export function addTiebreakRound(game: Game, trump: TrumpSuit, moves: Move[]): Game {
+  if (!game.tiebreak) return game;
+
+  const newRound: Round = { trump, moves };
+  const updatedTiebreak: Tiebreak = {
+    ...game.tiebreak,
+    rounds: [...game.tiebreak.rounds, newRound],
+  };
+
+  const updatedGame: Game = { ...game, tiebreak: updatedTiebreak };
+
+  // Check if scores have diverged
+  const scores: Record<string, number> = {};
+  for (const player of updatedTiebreak.players) {
+    scores[player] = getTiebreakScore(updatedGame, player);
+  }
+  const vals = Object.values(scores);
+  const allEqual = vals.every((s) => s === vals[0]);
+
+  if (!allEqual) {
+    // Tiebreak resolved — highest score loses
+    const sorted = Object.entries(scores).sort((a, b) => a[1] - b[1]);
+    const loser = sorted[sorted.length - 1][0];
+    const tiebreakWinners = updatedTiebreak.players.filter((u) => u !== loser);
+    updatedGame.loser = loser;
+    updatedGame.winners = [...updatedGame.winners, ...tiebreakWinners];
+    updatedGame.inProgress = false;
+  }
+
+  return updatedGame;
+}
+
+/** Remove the last tiebreak round. */
+export function undoLastTiebreakRound(game: Game): Game {
+  if (!game.tiebreak || game.tiebreak.rounds.length === 0) return game;
+  return {
+    ...game,
+    tiebreak: {
+      ...game.tiebreak,
+      rounds: game.tiebreak.rounds.slice(0, -1),
+    },
+    loser: null,
+    winners: game.winners.filter((u) => !game.tiebreak!.players.includes(u)),
+    inProgress: true,
+  };
+}
+
+/** Get the username of the tiebreak player whose turn it is. */
+export function getTiebreakTurnPlayer(game: Game, roundNumber: number): string {
+  if (!game.tiebreak) throw new Error('No tiebreak in progress');
+  const order = game.tiebreak.players;
+  // Starter goes first; alternate each round
+  const starterIdx = order.indexOf(game.tiebreak.starter);
+  const idx = (starterIdx + roundNumber - 1) % order.length;
+  return order[idx];
 }
 
 /** Convert a game to the JSON format compatible with the dashboard data files. */

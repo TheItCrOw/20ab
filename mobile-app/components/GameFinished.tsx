@@ -39,6 +39,7 @@ export default function GameFinished({ game, players, onNewGame }: Props) {
       <Text style={[styles.pageTitle, { color: colors.text }]}>Game Over</Text>
       <Text style={[styles.roundsInfo, { color: colors.textSecondary }]}>
         {game.rounds.length} rounds played
+        {game.tiebreak ? ` · ${game.tiebreak.rounds.length} tiebreaker` : ''}
       </Text>
 
       {/* Result cards */}

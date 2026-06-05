@@ -4,7 +4,7 @@ import { Text } from './Themed';
 import Colors, { accent, win, loss } from '@/constants/Colors';
 import { useColorScheme } from './useColorScheme';
 import { Game, Player, TrumpSuit, MIN_DELTA, MAX_DELTA, NO_TRICK_DELTA, TRUMP_SYMBOLS, TRUMP_LABELS, TRUMP_COLORS } from '@/models/types';
-import { getCurrentScore, canSitOut, getMultiplier } from '@/services/gameLogic';
+import { getCurrentScore, canSitOut, getMultiplier, getTiebreakScore } from '@/services/gameLogic';
 
 interface Props {
   game: Game;
@@ -13,9 +13,11 @@ interface Props {
   playerOrder?: string[];
   onSubmit: (deltas: Record<string, number>, sittingOut: Set<string>) => void;
   onBack: () => void;
+  /** When true, only tiebreak players are shown and sit-out is disabled. */
+  tiebreakMode?: boolean;
 }
 
-export default function RoundInput({ game, players, trump, playerOrder, onSubmit, onBack }: Props) {
+export default function RoundInput({ game, players, trump, playerOrder, onSubmit, onBack, tiebreakMode }: Props) {
   const colorScheme = useColorScheme() ?? 'dark';
   const colors = Colors[colorScheme];
   const accentColor = colorScheme === 'dark' ? accent.dark : accent.light;
@@ -25,9 +27,15 @@ export default function RoundInput({ game, players, trump, playerOrder, onSubmit
   const multiplier = getMultiplier(trump);
   const isClubs = trump === 'clubs';
 
+  // In tiebreak mode, only show the tied players
+  const participantList = tiebreakMode && game.tiebreak ? game.tiebreak.players : game.participants;
+  const getScore = tiebreakMode
+    ? (username: string) => getTiebreakScore(game, username)
+    : (username: string) => getCurrentScore(game, username);
+
   const [deltas, setDeltas] = useState<Record<string, number>>(() => {
     const init: Record<string, number> = {};
-    game.participants.forEach((u) => (init[u] = 0));
+    participantList.forEach((u) => (init[u] = 0));
     return init;
   });
   const [sittingOut, setSittingOut] = useState<Set<string>>(new Set());
@@ -44,7 +52,7 @@ export default function RoundInput({ game, players, trump, playerOrder, onSubmit
     setSittingOut((prev) => {
       if (!prev.has(username)) {
         // Player is about to sit out — ensure at least 2 remain active
-        const activeAfter = game.participants.length - prev.size - 1;
+        const activeAfter = participantList.length - prev.size - 1;
         if (activeAfter < 2) {
           Alert.alert('Cannot sit out', 'At least 2 players must participate in every round.');
           return prev;
@@ -85,7 +93,7 @@ export default function RoundInput({ game, players, trump, playerOrder, onSubmit
   }
 
   function handleSubmit() {
-    const activeCount = game.participants.filter((u) => !sittingOut.has(u)).length;
+    const activeCount = participantList.filter((u) => !sittingOut.has(u)).length;
     if (activeCount < 2) {
       Alert.alert('Error', 'At least 2 players must participate in every round.');
       return;
@@ -119,10 +127,12 @@ export default function RoundInput({ game, players, trump, playerOrder, onSubmit
         </RNView>
       </RNView>
 
-      <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>ENTER POINTS</Text>
+      <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>
+        {tiebreakMode ? 'TIEBREAKER — ENTER POINTS' : 'ENTER POINTS'}
+      </Text>
 
-      {(playerOrder ?? game.participants).map((username) => {
-        const currentScore = getCurrentScore(game, username);
+      {(playerOrder ?? participantList).map((username) => {
+        const currentScore = getScore(username);
         const isSittingOut = sittingOut.has(username);
         const isNoTrick = noTrick.has(username);
         const canPlayerSitOut = canSitOut(game, username, trump);
@@ -172,7 +182,7 @@ export default function RoundInput({ game, players, trump, playerOrder, onSubmit
                     {isNoTrick ? 'NO TRICK' : 'NO TRICK'}
                   </Text>
                 </TouchableOpacity>
-                {!isClubs && canPlayerSitOut ? (
+                {!tiebreakMode && !isClubs && canPlayerSitOut ? (
                   <TouchableOpacity
                     style={[
                       styles.sitOutBtn,
@@ -187,7 +197,7 @@ export default function RoundInput({ game, players, trump, playerOrder, onSubmit
                       {isSittingOut ? 'SITTING OUT' : 'SIT OUT'}
                     </Text>
                   </TouchableOpacity>
-                ) : !isClubs && !canPlayerSitOut ? (
+                ) : !tiebreakMode && !isClubs && !canPlayerSitOut ? (
                   <Text style={[styles.mustPlayLabel, { color: colors.textTertiary }]}>must play</Text>
                 ) : null}
               </RNView>

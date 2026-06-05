@@ -48,6 +48,15 @@ export interface Round {
   moves: Move[];
 }
 
+export interface Tiebreak {
+  /** The players tied for the loss (must play tiebreaker). */
+  players: string[];
+  /** Rounds played during the tiebreaker. */
+  rounds: Round[];
+  /** Who goes first in the tiebreaker (drawn by card). */
+  starter: string;
+}
+
 export interface Game {
   id: string;
   date: string; // ISO datetime string YYYY-MM-DDTHH:mm:ss
@@ -62,6 +71,8 @@ export interface Game {
   /** Fixed seating order that determines turn rotation. */
   dealOrder?: string[];
   inProgress: boolean;
+  /** Present when two players are tied for the loss and must play a tiebreaker. */
+  tiebreak?: Tiebreak;
 }
 
 export const STARTING_SCORE = 20;

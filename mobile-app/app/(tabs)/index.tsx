@@ -27,6 +27,11 @@ import {
   undoLastRound,
   buildRoundMoves,
   getCurrentTurnPlayer,
+  buildTiebreakMoves,
+  addTiebreakRound,
+  undoLastTiebreakRound,
+  getTiebreakTurnPlayer,
+  getTiebreakScore,
 } from '@/services/gameLogic';
 import PlayerSelector from '@/components/PlayerSelector';
 import ScoreBoard from '@/components/ScoreBoard';
@@ -37,7 +42,7 @@ import GameFinished from '@/components/GameFinished';
 import StarterSelect from '@/components/StarterSelect';
 import OrderSetup from '@/components/OrderSetup';
 
-type Phase = 'loading' | 'no_game' | 'starter_select' | 'order_setup' | 'trump_select' | 'score_input' | 'game_finished';
+type Phase = 'loading' | 'no_game' | 'starter_select' | 'order_setup' | 'trump_select' | 'score_input' | 'game_finished' | 'draw_detected' | 'tiebreak_starter' | 'tiebreak_trump' | 'tiebreak_input';
 
 export default function GameScreen() {
   const colorScheme = useColorScheme() ?? 'dark';
@@ -56,7 +61,7 @@ export default function GameScreen() {
   const [starter, setStarter] = useState<string | null>(null);
 
   const navigation = useNavigation();
-  const isActiveGame = phase === 'trump_select' || phase === 'score_input';
+  const isActiveGame = phase === 'trump_select' || phase === 'score_input' || phase === 'tiebreak_trump' || phase === 'tiebreak_input';
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -93,6 +98,14 @@ export default function GameScreen() {
       setPhase('no_game');
     } else if (!activeGame.inProgress) {
       setPhase('game_finished');
+    } else if (activeGame.tiebreak && !activeGame.loser) {
+      // Tiebreak in progress — resume at the right step
+      setPlayerOrder(activeGame.dealOrder ?? activeGame.participants);
+      if (!activeGame.tiebreak.starter) {
+        setPhase('draw_detected');
+      } else {
+        setPhase('tiebreak_trump');
+      }
     } else {
       setPlayerOrder(activeGame.dealOrder ?? activeGame.participants);
       setPhase('trump_select');
@@ -137,7 +150,13 @@ export default function GameScreen() {
     const updated = addRound(game, selectedTrump, moves);
     setGame(updated);
 
-    if (updated.inProgress) {
+    if (updated.tiebreak && !updated.loser) {
+      // Draw detected — enter tiebreak flow
+      await saveActiveGame(updated);
+      setSelectedTrump(null);
+      setPhase('draw_detected');
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    } else if (updated.inProgress) {
       await saveActiveGame(updated);
       setSelectedTrump(null);
       setPhase('trump_select');
@@ -180,6 +199,61 @@ export default function GameScreen() {
     setPhase('no_game');
   }
 
+  // --- Tiebreak handlers ---
+
+  async function handleTiebreakStarterSelected(starterUsername: string) {
+    if (!game || !game.tiebreak) return;
+    const updated: Game = {
+      ...game,
+      tiebreak: { ...game.tiebreak, starter: starterUsername },
+    };
+    setGame(updated);
+    await saveActiveGame(updated);
+    setPhase('tiebreak_trump');
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  }
+
+  function handleTiebreakTrumpSelected(trump: TrumpSuit) {
+    setSelectedTrump(trump);
+    setPhase('tiebreak_input');
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  }
+
+  async function handleTiebreakSubmitRound(
+    deltas: Record<string, number>,
+    sittingOut: Set<string>
+  ) {
+    if (!game || !selectedTrump || !game.tiebreak) return;
+
+    const moves = buildTiebreakMoves(game, selectedTrump, deltas);
+    const updated = addTiebreakRound(game, selectedTrump, moves);
+    setGame(updated);
+
+    if (!updated.inProgress && updated.loser) {
+      // Tiebreak resolved
+      await saveGame(updated);
+      await saveActiveGame(null);
+      setPhase('game_finished');
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } else {
+      // Still tied — play another tiebreak round
+      await saveActiveGame(updated);
+      setSelectedTrump(null);
+      setPhase('tiebreak_trump');
+    }
+  }
+
+  async function handleTiebreakUndo() {
+    if (!game || !game.tiebreak) return;
+    if (game.tiebreak.rounds.length === 0) return;
+    const updated = undoLastTiebreakRound(game);
+    setGame(updated);
+    await saveActiveGame(updated);
+    setSelectedTrump(null);
+    setPhase('tiebreak_trump');
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  }
+
   // --- Render phases ---
 
   if (phase === 'loading') {
@@ -218,6 +292,134 @@ export default function GameScreen() {
   if (phase === 'game_finished' && game) {
     return (
       <GameFinished game={game} players={players} onNewGame={handleNewGame} />
+    );
+  }
+
+  // --- Draw / tiebreak phases ---
+
+  if (phase === 'draw_detected' && game?.tiebreak) {
+    const tiedNames = game.tiebreak.players
+      .map((u) => players.find((p) => p.username === u)?.name ?? u)
+      .join(' & ');
+    return (
+      <RNView style={[styles.center, { backgroundColor: colors.background, padding: 32 }]}>
+        <Text style={{ fontSize: 48, marginBottom: 12 }}>🤝</Text>
+        <Text style={{ fontSize: 26, fontWeight: '800', color: colors.text, textAlign: 'center', marginBottom: 8 }}>
+          Draw!
+        </Text>
+        <Text style={{ fontSize: 15, color: colors.textSecondary, textAlign: 'center', lineHeight: 22, marginBottom: 32 }}>
+          {tiedNames} are tied.{'\n'}They must play a tiebreaker round.
+        </Text>
+        <TouchableOpacity
+          style={[styles.actionBtn, { backgroundColor: accentColor, borderColor: accentColor, paddingHorizontal: 40 }]}
+          onPress={() => setPhase('tiebreak_starter')}
+          activeOpacity={0.85}
+        >
+          <Text style={{ color: '#fff', fontWeight: '700', fontSize: 16 }}>Continue</Text>
+        </TouchableOpacity>
+      </RNView>
+    );
+  }
+
+  if (phase === 'tiebreak_starter' && game?.tiebreak) {
+    return (
+      <StarterSelect
+        participants={game.tiebreak.players}
+        onSelect={handleTiebreakStarterSelected}
+        onBack={() => setPhase('draw_detected')}
+      />
+    );
+  }
+
+  if (phase === 'tiebreak_trump' && game?.tiebreak) {
+    const tb = game.tiebreak;
+    const roundNum = tb.rounds.length + 1;
+    return (
+      <RNView style={[styles.fill, { backgroundColor: colors.background }]}>
+        {/* Abandon modal (shared) */}
+        <Modal
+          visible={showAbandonModal}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setShowAbandonModal(false)}
+        >
+          <RNView style={styles.modalOverlay}>
+            <RNView style={[styles.modalBox, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>Abandon Game</Text>
+              <Text style={[styles.modalMessage, { color: colors.textSecondary }]}>
+                Do you really want to abandon the current game? It will not be saved.
+              </Text>
+              <RNView style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={[styles.modalBtn, { borderColor: colors.border, borderWidth: 1 }]}
+                  onPress={() => setShowAbandonModal(false)}
+                >
+                  <Text style={{ color: colors.textSecondary, fontWeight: '600' }}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modalBtn, { backgroundColor: lossColor }]}
+                  onPress={confirmAbandon}
+                >
+                  <Text style={{ color: '#fff', fontWeight: '700' }}>Yes, abandon</Text>
+                </TouchableOpacity>
+              </RNView>
+            </RNView>
+          </RNView>
+        </Modal>
+
+        <ScrollView contentContainerStyle={styles.content}>
+          {/* Tiebreak header */}
+          <RNView style={{ alignItems: 'center', marginBottom: 16 }}>
+            <Text style={{ fontSize: 13, fontWeight: '700', color: lossColor, letterSpacing: 1.2, marginBottom: 4 }}>
+              TIEBREAKER
+            </Text>
+            {tb.players.map((u) => {
+              const score = getTiebreakScore(game, u);
+              const name = players.find((p) => p.username === u)?.name ?? u;
+              return (
+                <Text key={u} style={{ fontSize: 15, fontWeight: '600', color: colors.text, marginVertical: 2 }}>
+                  {name}: {score}
+                </Text>
+              );
+            })}
+          </RNView>
+        </ScrollView>
+
+        <RNView style={[styles.bottomArea, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
+          {tb.rounds.length > 0 && (
+            <RNView style={styles.actions}>
+              <TouchableOpacity
+                style={[styles.actionBtn, { borderColor: accentColor }]}
+                onPress={handleTiebreakUndo}
+              >
+                <Text style={{ color: accentColor, fontWeight: '600' }}>Undo</Text>
+              </TouchableOpacity>
+            </RNView>
+          )}
+          <TrumpSelector
+            roundNumber={roundNum}
+            currentPlayer={getTiebreakTurnPlayer(game, roundNum)}
+            onSelect={handleTiebreakTrumpSelected}
+          />
+        </RNView>
+      </RNView>
+    );
+  }
+
+  if (phase === 'tiebreak_input' && game?.tiebreak && selectedTrump) {
+    return (
+      <RoundInput
+        game={game}
+        players={players}
+        trump={selectedTrump}
+        playerOrder={game.tiebreak.players}
+        onSubmit={handleTiebreakSubmitRound}
+        onBack={() => {
+          setSelectedTrump(null);
+          setPhase('tiebreak_trump');
+        }}
+        tiebreakMode
+      />
     );
   }
 

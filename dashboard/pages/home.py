@@ -8,13 +8,11 @@ import plotly.graph_objects as go
 
 import constants
 from constants import GAMES_PAGE_SIZE
-from services.data_service import DataService, get_data_service
+from services.data_service import get_data_service
 from utils.component_utils import build_game_table, get_filtered_games, build_leaderboard_table
 from utils.statistics_utils import score_trajectory
 
 register_page(__name__, path="/", name="Home")
-
-data_service = DataService(constants.DATA_PATH)
 
 _LOADING_COLOR = "#6366F1"
 _CHART_CFG = {"displayModeBar": False, "scrollZoom": False, "displaylogo": False, "staticPlot": True}
@@ -63,7 +61,7 @@ layout = dbc.Container(
                         [
                             html.Span("Recent Games", className="section-header-title"),
                             html.Span(
-                                [html.Span(len(data_service.get_all_games()), className="fw-bold"),
+                                [html.Span(len(get_data_service().get_all_games()), className="fw-bold"),
                                  html.Span(" total", className="ms-1 text-muted small-font")],
                             ),
                         ],

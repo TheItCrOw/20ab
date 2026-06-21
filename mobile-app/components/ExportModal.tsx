@@ -6,6 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,10 +21,11 @@ import {
   saveGamesToDevice,
   shareGames,
 } from '@/services/exportService';
+import { uploadGames } from '@/services/api';
 import { getGames } from '@/services/storage';
 
-type Step = 'select' | 'method';
-type ExportMethod = 'device' | 'email' | 'whatsapp';
+type Step = 'select' | 'method' | 'upload';
+type ExportMethod = 'device' | 'email' | 'whatsapp' | 'upload';
 
 interface Props {
   visible: boolean;
@@ -42,6 +44,8 @@ export default function ExportModal({ visible, onClose }: Props) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
+  const [password, setPassword] = useState('');
+  const [uploadMessage, setUploadMessage] = useState<string | null>(null);
 
   // Load completed games whenever modal opens
   useEffect(() => {
@@ -49,6 +53,8 @@ export default function ExportModal({ visible, onClose }: Props) {
       setStep('select');
       setSelected(new Set());
       setStatus(null);
+      setPassword('');
+      setUploadMessage(null);
       getGames().then((all) => {
         const completed = all
           .filter((g) => !g.inProgress)
@@ -98,9 +104,17 @@ export default function ExportModal({ visible, onClose }: Props) {
         } else {
           setStatus('done');
         }
-      } else {
+      } else if (method === 'whatsapp') {
         await shareGames(toExport);
         setStatus('done');
+      } else if (method === 'upload') {
+        const result = await uploadGames(toExport, password);
+        if (result.success) {
+          setUploadMessage(result.message ?? null);
+          setStatus('uploaded');
+        } else {
+          setStatus(result.error ?? 'Upload failed.');
+        }
       }
     } catch (e: any) {
       setStatus(e?.message ?? 'Export failed. Please try again.');
@@ -113,16 +127,18 @@ export default function ExportModal({ visible, onClose }: Props) {
     setStep('select');
     setSelected(new Set());
     setStatus(null);
+    setPassword('');
+    setUploadMessage(null);
     onClose();
   }
 
   // ---- Render helpers ----
 
-  function renderHeader(title: string, canGoBack?: boolean) {
+  function renderHeader(title: string, backTo?: Step) {
     return (
       <View style={s.header}>
-        {canGoBack ? (
-          <Pressable style={s.backBtn} onPress={() => setStep('select')}>
+        {backTo ? (
+          <Pressable style={s.backBtn} onPress={() => { setStatus(null); setStep(backTo); }}>
             <FontAwesome name="chevron-left" size={14} color={colors.textSecondary} />
             <Text style={s.backText}>Back</Text>
           </Pressable>
@@ -213,7 +229,7 @@ export default function ExportModal({ visible, onClose }: Props) {
     if (status === 'done') {
       return (
         <>
-          {renderHeader('Export Complete', true)}
+          {renderHeader('Export Complete', 'select')}
           <View style={s.successContainer}>
             <View style={[s.successIcon, { backgroundColor: accentColor + '22' }]}>
               <FontAwesome name="check-circle" size={48} color={accentColor} />
@@ -236,7 +252,7 @@ export default function ExportModal({ visible, onClose }: Props) {
     if (status && status !== 'done') {
       return (
         <>
-          {renderHeader('Export Failed', true)}
+          {renderHeader('Export Failed', 'select')}
           <View style={s.successContainer}>
             <Text style={[s.successTitle, { color: '#EF4444' }]}>Something went wrong</Text>
             <Text style={s.successSub}>{status}</Text>
@@ -265,7 +281,7 @@ export default function ExportModal({ visible, onClose }: Props) {
 
     return (
       <>
-        {renderHeader('Choose Method', true)}
+        {renderHeader('Choose Method', 'select')}
         <Text style={s.subtitle}>
           Exporting {count} game{count !== 1 ? 's' : ''} as{' '}
           <Text style={s.mono}>
@@ -276,6 +292,14 @@ export default function ExportModal({ visible, onClose }: Props) {
         </Text>
 
         <View style={s.methodList}>
+          <MethodCard
+            icon="cloud-upload"
+            title="Upload to Dashboard"
+            subtitle="Send directly to the 20ab dashboard server"
+            colors={colors}
+            accentColor={accentColor}
+            onPress={() => { setStatus(null); setStep('upload'); }}
+          />
           <MethodCard
             icon="download"
             title="Save to Device"
@@ -305,6 +329,103 @@ export default function ExportModal({ visible, onClose }: Props) {
     );
   }
 
+  // Step 3: upload with password
+  function renderUploadStep() {
+    const count = selected.size;
+
+    if (status === 'uploaded') {
+      return (
+        <>
+          {renderHeader('Upload Complete', 'method')}
+          <View style={s.successContainer}>
+            <View style={[s.successIcon, { backgroundColor: accentColor + '22' }]}>
+              <FontAwesome name="cloud-upload" size={48} color={accentColor} />
+            </View>
+            <Text style={s.successTitle}>
+              {count} game{count !== 1 ? 's' : ''} uploaded
+            </Text>
+            <Text style={s.successSub}>
+              {uploadMessage ?? 'The games are now available on the dashboard.'}
+            </Text>
+            <Pressable style={[s.primaryBtn, { marginTop: 24 }]} onPress={handleClose}>
+              <Text style={s.primaryBtnText}>Done</Text>
+            </Pressable>
+          </View>
+        </>
+      );
+    }
+
+    if (status && status !== 'uploaded') {
+      return (
+        <>
+          {renderHeader('Upload Failed', 'method')}
+          <View style={s.successContainer}>
+            <Text style={[s.successTitle, { color: '#EF4444' }]}>Something went wrong</Text>
+            <Text style={s.successSub}>{status}</Text>
+            <Pressable
+              style={[s.primaryBtn, { marginTop: 24 }]}
+              onPress={() => setStatus(null)}
+            >
+              <Text style={s.primaryBtnText}>Try Again</Text>
+            </Pressable>
+          </View>
+        </>
+      );
+    }
+
+    if (loading) {
+      return (
+        <>
+          {renderHeader('Uploading…')}
+          <View style={s.successContainer}>
+            <ActivityIndicator size="large" color={accentColor} />
+            <Text style={[s.successSub, { marginTop: 16 }]}>Uploading to dashboard…</Text>
+          </View>
+        </>
+      );
+    }
+
+    return (
+      <>
+        {renderHeader('Upload to Dashboard', 'method')}
+        <Text style={s.subtitle}>
+          Uploading {count} game{count !== 1 ? 's' : ''} to the dashboard server.
+          Enter the admin password to continue.
+        </Text>
+
+        <View style={s.uploadForm}>
+          <Text style={s.inputLabel}>Admin Password</Text>
+          <TextInput
+            style={[s.input, { borderColor: colors.border, color: colors.text, backgroundColor: colors.surface }]}
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Enter password"
+            placeholderTextColor={colors.textTertiary}
+            secureTextEntry
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+        </View>
+
+        <View style={s.footer}>
+          <Pressable
+            style={[s.primaryBtn, !password && s.primaryBtnDisabled]}
+            disabled={!password}
+            onPress={() => handleExport('upload')}
+          >
+            <Text style={s.primaryBtnText}>Upload</Text>
+          </Pressable>
+        </View>
+      </>
+    );
+  }
+
+  function renderStep() {
+    if (step === 'select') return renderSelectStep();
+    if (step === 'upload') return renderUploadStep();
+    return renderMethodStep();
+  }
+
   return (
     <Modal
       visible={visible}
@@ -313,7 +434,7 @@ export default function ExportModal({ visible, onClose }: Props) {
       onRequestClose={handleClose}
     >
       <View style={s.container}>
-        {step === 'select' ? renderSelectStep() : renderMethodStep()}
+        {renderStep()}
       </View>
     </Modal>
   );
@@ -520,7 +641,9 @@ function makeStyles(
       backgroundColor: accentColor,
       borderRadius: 10,
       paddingVertical: 14,
+      paddingHorizontal: 32,
       alignItems: 'center',
+      alignSelf: 'stretch',
     },
     primaryBtnDisabled: {
       opacity: 0.4,
@@ -571,6 +694,23 @@ function makeStyles(
       color: colors.textSecondary,
       textAlign: 'center',
       lineHeight: 18,
+    },
+    uploadForm: {
+      padding: 16,
+      paddingTop: 12,
+    },
+    inputLabel: {
+      fontSize: 13,
+      fontWeight: '600',
+      color: colors.textSecondary,
+      marginBottom: 8,
+    },
+    input: {
+      borderWidth: 1,
+      borderRadius: 10,
+      paddingHorizontal: 14,
+      paddingVertical: 12,
+      fontSize: 15,
     },
   });
 }

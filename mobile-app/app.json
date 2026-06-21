@@ -42,7 +42,8 @@
       "eas": {
         "projectId": "3cee4df2-600b-4caa-ae1b-05bdfe7ed585"
       },
-      "router": {}
+      "router": {},
+      "dashboardUrl": "https://20ab-dashboard.bundestag-mine.de/"
     },
     "owner": "theitcrow"
   }

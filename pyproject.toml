@@ -16,5 +16,7 @@ dependencies = [
     "dash-mantine-components",
     "pandas",
     "pydantic",
-    "waitress"
+    "waitress",
+    "python-dotenv",
+    "flask_cors"
 ]

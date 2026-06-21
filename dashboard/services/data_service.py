@@ -36,9 +36,11 @@ class DataService:
         filtered_games = self.games
 
         if start_date and end_date:
+            start_d = start_date.date() if hasattr(start_date, 'date') else start_date
+            end_d = end_date.date() if hasattr(end_date, 'date') else end_date
             filtered_games = [
                 game for game in filtered_games
-                if start_date <= game.date <= end_date
+                if start_d <= game.date.date() <= end_d
             ]
 
         if players:

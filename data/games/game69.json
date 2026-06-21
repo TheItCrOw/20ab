@@ -1,0 +1,135 @@
+{
+  "date": "2026-06-06T14:51:48",
+  "finisher": "Celine",
+  "loser": "Felix",
+  "rounds": [
+    {
+      "moves": [
+        {
+          "username": "Felix",
+          "value": 16
+        },
+        {
+          "username": "Moritz",
+          "value": 25
+        },
+        {
+          "username": "Celine",
+          "value": 19
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Felix",
+          "value": 17
+        },
+        {
+          "username": "Moritz",
+          "value": 21
+        },
+        {
+          "username": "Celine",
+          "value": 18
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Felix",
+          "value": 18
+        },
+        {
+          "username": "Moritz",
+          "value": 19
+        },
+        {
+          "username": "Celine",
+          "value": 15
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Felix",
+          "value": 17
+        },
+        {
+          "username": "Moritz",
+          "value": 17
+        },
+        {
+          "username": "Celine",
+          "value": 13
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Felix",
+          "value": 16
+        },
+        {
+          "username": "Moritz",
+          "value": 22
+        },
+        {
+          "username": "Celine",
+          "value": 9
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Felix",
+          "value": 18
+        },
+        {
+          "username": "Moritz",
+          "value": 18
+        },
+        {
+          "username": "Celine",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Felix",
+          "value": 17
+        },
+        {
+          "username": "Moritz",
+          "value": 15
+        },
+        {
+          "username": "Celine",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Felix",
+          "value": 22
+        },
+        {
+          "username": "Moritz",
+          "value": 13
+        },
+        {
+          "username": "Celine",
+          "value": -1
+        }
+      ]
+    }
+  ]
+}

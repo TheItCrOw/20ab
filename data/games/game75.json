@@ -1,0 +1,119 @@
+  {
+    "date": "2026-06-19T20:31:45",
+    "finisher": "Celine",
+    "loser": "Kevin",
+    "rounds": [
+      {
+        "moves": [
+          {
+            "username": "Kevin",
+            "value": 19
+          },
+          {
+            "username": "Celine",
+            "value": 17
+          },
+          {
+            "username": "Felix",
+            "value": 19
+          }
+        ]
+      },
+      {
+        "moves": [
+          {
+            "username": "Kevin",
+            "value": 17
+          },
+          {
+            "username": "Celine",
+            "value": 14
+          },
+          {
+            "username": "Felix",
+            "value": 20
+          }
+        ]
+      },
+      {
+        "moves": [
+          {
+            "username": "Kevin",
+            "value": 16
+          },
+          {
+            "username": "Celine",
+            "value": 15
+          },
+          {
+            "username": "Felix",
+            "value": 16
+          }
+        ]
+      },
+      {
+        "moves": [
+          {
+            "username": "Kevin",
+            "value": 14
+          },
+          {
+            "username": "Celine",
+            "value": 11
+          },
+          {
+            "username": "Felix",
+            "value": 12
+          }
+        ]
+      },
+      {
+        "moves": [
+          {
+            "username": "Kevin",
+            "value": 13
+          },
+          {
+            "username": "Celine",
+            "value": 7
+          },
+          {
+            "username": "Felix",
+            "value": 13
+          }
+        ]
+      },
+      {
+        "moves": [
+          {
+            "username": "Kevin",
+            "value": 18
+          },
+          {
+            "username": "Celine",
+            "value": 4
+          },
+          {
+            "username": "Felix",
+            "value": 11
+          }
+        ]
+      },
+      {
+        "moves": [
+          {
+            "username": "Kevin",
+            "value": 14
+          },
+          {
+            "username": "Celine",
+            "value": 0
+          },
+          {
+            "username": "Felix",
+            "value": 9
+          }
+        ]
+      }
+    ]
+  }

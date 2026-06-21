@@ -1,0 +1,199 @@
+  {
+    "date": "2026-06-03T19:09:54",
+    "finisher": "Moritz",
+    "loser": "Felix",
+    "rounds": [
+      {
+        "moves": [
+          {
+            "username": "Felix",
+            "value": 20
+          },
+          {
+            "username": "Kevin",
+            "value": 30
+          },
+          {
+            "username": "Moritz",
+            "value": 16
+          },
+          {
+            "username": "Celine",
+            "value": 16
+          },
+          {
+            "username": "Luise",
+            "value": 18
+          }
+        ]
+      },
+      {
+        "moves": [
+          {
+            "username": "Felix",
+            "value": 22
+          },
+          {
+            "username": "Kevin",
+            "value": 24
+          },
+          {
+            "username": "Moritz",
+            "value": 12
+          },
+          {
+            "username": "Celine",
+            "value": 16
+          },
+          {
+            "username": "Luise",
+            "value": 20
+          }
+        ]
+      },
+      {
+        "moves": [
+          {
+            "username": "Felix",
+            "value": 24
+          },
+          {
+            "username": "Kevin",
+            "value": 24
+          },
+          {
+            "username": "Moritz",
+            "value": 8
+          },
+          {
+            "username": "Celine",
+            "value": 12
+          },
+          {
+            "username": "Luise",
+            "value": 18
+          }
+        ]
+      },
+      {
+        "moves": [
+          {
+            "username": "Felix",
+            "value": 26
+          },
+          {
+            "username": "Kevin",
+            "value": 18
+          },
+          {
+            "username": "Moritz",
+            "value": 4
+          },
+          {
+            "username": "Celine",
+            "value": 14
+          },
+          {
+            "username": "Luise",
+            "value": 18
+          }
+        ]
+      },
+      {
+        "moves": [
+          {
+            "username": "Felix",
+            "value": 25
+          },
+          {
+            "username": "Kevin",
+            "value": 17
+          },
+          {
+            "username": "Moritz",
+            "value": 4
+          },
+          {
+            "username": "Celine",
+            "value": 11
+          },
+          {
+            "username": "Luise",
+            "value": 19
+          }
+        ]
+      },
+      {
+        "moves": [
+          {
+            "username": "Felix",
+            "value": 25
+          },
+          {
+            "username": "Kevin",
+            "value": 22
+          },
+          {
+            "username": "Moritz",
+            "value": 3
+          },
+          {
+            "username": "Celine",
+            "value": 7
+          },
+          {
+            "username": "Luise",
+            "value": 20
+          }
+        ]
+      },
+      {
+        "moves": [
+          {
+            "username": "Felix",
+            "value": 26
+          },
+          {
+            "username": "Kevin",
+            "value": 18
+          },
+          {
+            "username": "Moritz",
+            "value": 2
+          },
+          {
+            "username": "Celine",
+            "value": 7
+          },
+          {
+            "username": "Luise",
+            "value": 25
+          }
+        ]
+      },
+      {
+        "moves": [
+          {
+            "username": "Felix",
+            "value": 28
+          },
+          {
+            "username": "Kevin",
+            "value": 18
+          },
+          {
+            "username": "Moritz",
+            "value": -2
+          },
+          {
+            "username": "Celine",
+            "value": 3
+          },
+          {
+            "username": "Luise",
+            "value": 23
+          }
+        ]
+      }
+    ]
+  }

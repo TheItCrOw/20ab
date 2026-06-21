@@ -1,0 +1,119 @@
+{
+  "date": "2026-06-19T19:37:14",
+  "finisher": "Kevin",
+  "loser": "Celine",
+  "rounds": [
+    {
+      "moves": [
+        {
+          "username": "Felix",
+          "value": 17
+        },
+        {
+          "username": "Kevin",
+          "value": 25
+        },
+        {
+          "username": "Celine",
+          "value": 18
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Felix",
+          "value": 13
+        },
+        {
+          "username": "Kevin",
+          "value": 19
+        },
+        {
+          "username": "Celine",
+          "value": 20
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Felix",
+          "value": 9
+        },
+        {
+          "username": "Kevin",
+          "value": 17
+        },
+        {
+          "username": "Celine",
+          "value": 16
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Felix",
+          "value": 11
+        },
+        {
+          "username": "Kevin",
+          "value": 7
+        },
+        {
+          "username": "Celine",
+          "value": 26
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Felix",
+          "value": 8
+        },
+        {
+          "username": "Kevin",
+          "value": 5
+        },
+        {
+          "username": "Celine",
+          "value": 27
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Felix",
+          "value": 10
+        },
+        {
+          "username": "Kevin",
+          "value": 1
+        },
+        {
+          "username": "Celine",
+          "value": 21
+        }
+      ]
+    },
+    {
+      "moves": [
+        {
+          "username": "Felix",
+          "value": 12
+        },
+        {
+          "username": "Kevin",
+          "value": -7
+        },
+        {
+          "username": "Celine",
+          "value": 19
+        }
+      ]
+    }
+  ]
+}

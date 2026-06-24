@@ -26,34 +26,34 @@ pio.templates["twentyab"] = {
         "paper_bgcolor": "rgba(0,0,0,0)",
         "plot_bgcolor":  "rgba(0,0,0,0)",
         "font": {
-            "family": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-            "color":  "#8A8FA8",
+            "family": "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            "color":  "#94A3B8",
             "size":   12,
         },
         "colorway": [
-            "#6366F1", "#22C55E", "#F59E0B",
-            "#06B6D4", "#EC4899", "#8B5CF6", "#14B8A6", "#F97316",
+            "#10B981", "#3B82F6", "#F59E0B",
+            "#EC4899", "#8B5CF6", "#06B6D4", "#F97316", "#14B8A6",
         ],
         "xaxis": {
-            "gridcolor":     "rgba(148,163,184,0.10)",
-            "linecolor":     "rgba(148,163,184,0.15)",
-            "zerolinecolor": "rgba(148,163,184,0.15)",
-            "tickfont":      {"color": "#8A8FA8", "size": 11},
-            "title":         {"font": {"color": "#8A8FA8"}},
+            "gridcolor":     "rgba(148,163,184,0.08)",
+            "linecolor":     "rgba(148,163,184,0.12)",
+            "zerolinecolor": "rgba(148,163,184,0.12)",
+            "tickfont":      {"color": "#94A3B8", "size": 11},
+            "title":         {"font": {"color": "#94A3B8"}},
         },
         "yaxis": {
-            "gridcolor":     "rgba(148,163,184,0.10)",
-            "linecolor":     "rgba(148,163,184,0.15)",
-            "zerolinecolor": "rgba(148,163,184,0.15)",
-            "tickfont":      {"color": "#8A8FA8", "size": 11},
-            "title":         {"font": {"color": "#8A8FA8"}},
+            "gridcolor":     "rgba(148,163,184,0.08)",
+            "linecolor":     "rgba(148,163,184,0.12)",
+            "zerolinecolor": "rgba(148,163,184,0.12)",
+            "tickfont":      {"color": "#94A3B8", "size": 11},
+            "title":         {"font": {"color": "#94A3B8"}},
         },
         "title": {
-            "font": {"color": "#8A8FA8", "size": 13},
+            "font": {"color": "#94A3B8", "size": 13},
             "pad":  {"t": 0, "b": 0},
         },
         "legend": {
-            "font":        {"color": "#8A8FA8", "size": 11},
+            "font":        {"color": "#94A3B8", "size": 11},
             "bgcolor":     "rgba(0,0,0,0)",
             "bordercolor": "rgba(0,0,0,0)",
         },
@@ -65,7 +65,7 @@ pio.templates.default = "twentyab"
 # ─────────────────────────────────────────────────────
 # App
 # ─────────────────────────────────────────────────────
-LIGHT_THEME = dbc.themes.LUX
+LIGHT_THEME = dbc.themes.FLATLY
 DARK_THEME  = dbc.themes.DARKLY
 
 app = Dash(

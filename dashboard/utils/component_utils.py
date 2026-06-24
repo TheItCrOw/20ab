@@ -83,21 +83,22 @@ def build_leaderboard_table(players: list[Player], games: list[Game]):
         fixed_columns={"headers": True, "data": 1},
         style_table={"overflowX": "auto", "minWidth": "100%"},
         style_header={
-            "fontWeight": "600",
-            "fontSize": "12px",
-            "borderBottom": "2px solid #E3E6F0",
+            "fontWeight": "700",
+            "fontSize": "11px",
+            "textTransform": "uppercase",
+            "letterSpacing": "0.04em",
+            "fontFamily": "Inter, -apple-system, sans-serif",
         },
         style_cell={
-            "padding": "8px 12px",
+            "padding": "10px 14px",
             "whiteSpace": "nowrap",
             "fontSize": "13px",
-            "border": "1px solid #EEF0F6",
+            "fontFamily": "Inter, -apple-system, sans-serif",
         },
         style_cell_conditional=[
             {
                 "if": {"column_id": "Player"},
                 "fontWeight": "600",
-                "borderRight": "2px solid #D4D7E8",
             }
         ],
     )

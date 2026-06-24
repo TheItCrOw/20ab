@@ -10,12 +10,21 @@ import constants
 from constants import GAMES_PAGE_SIZE
 from services.data_service import get_data_service
 from utils.component_utils import build_game_table, get_filtered_games, build_leaderboard_table
-from utils.statistics_utils import score_trajectory
+from utils.statistics_utils import (
+    score_trajectory, total_wins, total_finishes, total_losses,
+    drinks_balance, current_streak,
+)
 
 register_page(__name__, path="/", name="Home")
 
-_LOADING_COLOR = "#6366F1"
+_LOADING_COLOR = "#10B981"
 _CHART_CFG = {"displayModeBar": False, "scrollZoom": False, "displaylogo": False, "staticPlot": True}
+
+# Chart colors
+_CLR_WIN    = "#10B981"
+_CLR_LOSS   = "#EF4444"
+_CLR_FINISH = "#F59E0B"
+_CLR_BAR    = "#10B981"
 
 
 def _card(*children, extra_class=""):
@@ -34,10 +43,27 @@ def _card_with_header(title, *children, badge=None):
     ], className="w-100 my-card mb-4")
 
 
+def _kpi_card(card_id, label, icon_class, color_class):
+    return html.Div([
+        html.Div(label, className="kpi-label"),
+        html.Div("—", id=card_id, className="kpi-value"),
+        html.Div("", id=f"{card_id}-sub", className="kpi-sub"),
+        html.I(className=f"{icon_class} kpi-icon"),
+    ], className=f"kpi-card {color_class}")
+
+
 layout = dbc.Container(
     fluid=True,
     children=[
         html.H1("Home", className="page-title"),
+
+        # ── KPI summary row ────────────────────
+        html.Div([
+            _kpi_card("kpi-games",   "Total Games",    "fa-solid fa-layer-group", "kpi-emerald"),
+            _kpi_card("kpi-players", "Active Players",  "fa-solid fa-users",       "kpi-blue"),
+            _kpi_card("kpi-streak",  "Longest Streak", "fa-solid fa-fire",        "kpi-gold"),
+            _kpi_card("kpi-drinks",  "Top Spender",    "fa-solid fa-beer-mug-empty", "kpi-red"),
+        ], className="kpi-row"),
 
         dbc.Row([
             # ── Wins/Losses bar chart ────────────────
@@ -79,7 +105,7 @@ layout = dbc.Container(
                         value=1,
                         siblings=1,
                         boundaries=1,
-                        color="indigo",
+                        color="green",
                         className="mt-2 pb-2 ps-3 pe-3",
                     ),
                 ], className="w-100 my-card mb-4"),
@@ -140,6 +166,78 @@ layout = dbc.Container(
 # ─────────────────────────────────────────────────────
 
 @callback(
+    Output("kpi-games",       "children"),
+    Output("kpi-games-sub",   "children"),
+    Output("kpi-players",     "children"),
+    Output("kpi-players-sub", "children"),
+    Output("kpi-streak",      "children"),
+    Output("kpi-streak-sub",  "children"),
+    Output("kpi-drinks",      "children"),
+    Output("kpi-drinks-sub",  "children"),
+    Input("players-selection", "value"),
+    Input("date-selection",    "start_date"),
+    Input("date-selection",    "end_date"),
+)
+def update_kpis(selected_players, start_date, end_date):
+    games = get_filtered_games(selected_players, start_date, end_date)
+
+    if constants.ALL_PLAYERS_NAME in (selected_players or []):
+        player_names = [p.username for p in get_data_service().get_all_players()]
+    else:
+        player_names = selected_players or []
+
+    # Total games
+    total_games = len(games)
+    games_sub = f"in selected period"
+
+    # Active players (those who actually played in the filtered games)
+    active = set()
+    for g in games:
+        active.update(g.participants)
+    active_count = len(active)
+    total_registered = len(get_data_service().get_all_players())
+    players_sub = f"of {max(total_registered, active_count)} registered"
+
+    # Longest current streak
+    best_streak_name, best_streak_val, best_streak_type = "—", 0, ""
+    for username in player_names:
+        player = get_data_service().get_player_by_username(username)
+        player_games = [g for g in games if username in g.participants]
+        if not player_games:
+            continue
+        s_type, s_len = current_streak(player, player_games)
+        if s_len > best_streak_val:
+            best_streak_val = s_len
+            best_streak_name = username
+            best_streak_type = s_type
+
+    streak_display = f"{best_streak_type}{best_streak_val}" if best_streak_val > 0 else "—"
+    streak_sub = best_streak_name if best_streak_val > 0 else ""
+
+    # Top spender (most negative drinks balance = spent the most)
+    top_spender_name, top_spender_bal = "—", 0.0
+    for username in player_names:
+        player = get_data_service().get_player_by_username(username)
+        player_games = [g for g in games if username in g.participants]
+        if not player_games:
+            continue
+        bal = drinks_balance(player, player_games)
+        if bal < top_spender_bal:
+            top_spender_bal = bal
+            top_spender_name = username
+
+    drinks_display = f"{abs(top_spender_bal):.2f}€" if top_spender_bal < 0 else "—"
+    drinks_sub = top_spender_name if top_spender_bal < 0 else ""
+
+    return (
+        str(total_games), games_sub,
+        str(active_count), players_sub,
+        streak_display, streak_sub,
+        drinks_display, drinks_sub,
+    )
+
+
+@callback(
     Output("recent-games-pagination", "total"),
     Output("recent-games-pagination", "value"),
     Input("players-selection", "value"),
@@ -191,9 +289,9 @@ def update_recent_games(selected_players, start_date, end_date, page):
         meta = html.Div(
             [
                 html.Span(
-                    f"🍺 {game.loser} pays ~{drinks_cost:.2f}€",
+                    f"{game.loser} pays ~{drinks_cost:.2f}",
                     className="small-font me-3",
-                    style={"color": "#EF4444", "whiteSpace": "nowrap"},
+                    style={"color": "var(--loss)", "whiteSpace": "nowrap"},
                 ),
                 html.Span(
                     str(game.date.date()),
@@ -256,15 +354,20 @@ def update_bar_chart(selected_players, start_date, end_date):
 
     x = selected_players
     fig = go.Figure(data=[
-        go.Bar(name="Losses",   x=x, y=[losses[n]   for n in x], marker_color="#EF4444"),
-        go.Bar(name="Wins",     x=x, y=[wins[n]     for n in x], marker_color="#22C55E"),
-        go.Bar(name="Finishes", x=x, y=[finishes[n] for n in x], marker_color="#F59E0B"),
+        go.Bar(name="Losses",   x=x, y=[losses[n]   for n in x], marker_color=_CLR_LOSS,
+               marker_line_width=0),
+        go.Bar(name="Wins",     x=x, y=[wins[n]     for n in x], marker_color=_CLR_WIN,
+               marker_line_width=0),
+        go.Bar(name="Finishes", x=x, y=[finishes[n] for n in x], marker_color=_CLR_FINISH,
+               marker_line_width=0),
     ])
     fig.update_layout(
         barmode="group",
         title={"text": "Finishes / Wins / Losses per Player", "x": 0, "xanchor": "left"},
         legend=dict(orientation="h", yanchor="top", y=-0.18, xanchor="center", x=0.5),
         margin=dict(l=0, r=0, t=36, b=68),
+        bargap=0.25,
+        bargroupgap=0.08,
     )
     fig.update_yaxes(tickmode="auto", nticks=6, rangemode="tozero", title=None, automargin=True)
     fig.update_xaxes(title=None, automargin=True)
@@ -319,7 +422,7 @@ def update_trajectory(selected_players, start_date, end_date):
             y=list(traj.values()),
             mode="lines+markers",
             name=username,
-            line=dict(width=2),
+            line=dict(width=2.5),
             marker=dict(size=5),
         ))
 
@@ -366,35 +469,37 @@ def update_monthly(selected_players, start_date, end_date):
     fig.add_trace(go.Bar(
         x=labels,
         y=[counts[k] for k in months],
-        marker_color="#6366F1",
+        marker_color=_CLR_BAR,
+        marker_line_width=0,
         showlegend=False,
     ))
     fig.update_layout(
         title={"text": "Games per Month", "x": 0, "xanchor": "left"},
         margin=dict(l=48, r=8, t=40, b=52),
+        bargap=0.3,
     )
     fig.update_xaxes(
         title="Month",
         showgrid=False,
         showline=True,
-        linecolor="rgba(148,163,184,0.4)",
+        linecolor="rgba(148,163,184,0.3)",
         ticks="outside",
-        tickcolor="rgba(148,163,184,0.4)",
-        tickfont=dict(size=11, color="#8A8FA8"),
-        title_font=dict(size=12, color="#8A8FA8"),
+        tickcolor="rgba(148,163,184,0.3)",
+        tickfont=dict(size=11, color="#94A3B8"),
+        title_font=dict(size=12, color="#94A3B8"),
     )
     fig.update_yaxes(
         title="Games",
         showgrid=True,
-        gridcolor="rgba(148,163,184,0.18)",
+        gridcolor="rgba(148,163,184,0.12)",
         showline=True,
-        linecolor="rgba(148,163,184,0.4)",
+        linecolor="rgba(148,163,184,0.3)",
         rangemode="tozero",
         tickmode="auto",
         nticks=6,
         ticks="outside",
-        tickcolor="rgba(148,163,184,0.4)",
-        tickfont=dict(size=11, color="#8A8FA8"),
-        title_font=dict(size=12, color="#8A8FA8"),
+        tickcolor="rgba(148,163,184,0.3)",
+        tickfont=dict(size=11, color="#94A3B8"),
+        title_font=dict(size=12, color="#94A3B8"),
     )
     return fig

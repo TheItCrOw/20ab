@@ -59,6 +59,11 @@ class DataService:
 
         return [Player(**p) for p in raw]
 
+    def reload(self):
+        """Reload players and games from disk."""
+        self.players = self._load_players()
+        self.games = self._load_games()
+
     def _load_games(self) -> list[Game]:
         games_dir = Path(os.path.join(self.data_path, "games"))
         games: list[Game] = []

@@ -180,7 +180,7 @@ def post_game():
         next_num += 1
 
     # Reload data service so dashboard picks up new data immediately
-    get_data_service.cache_clear()
+    get_data_service().reload()
 
     result = {"success": True, "game_numbers": saved_numbers}
     if duplicates:

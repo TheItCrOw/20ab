@@ -48,17 +48,15 @@ export default function GameHistory({ game }: Props) {
             ))}
           </RNView>
 
-          {/* Round rows (newest first) */}
-          {[...game.rounds].reverse().map((round, reverseIdx) => {
-            const idx = game.rounds.length - 1 - reverseIdx;
-            return (
+          {/* Round rows (oldest first) */}
+          {game.rounds.map((round, idx) => (
             <RNView
               key={idx}
               style={[
                 styles.row,
                 {
                   borderBottomColor: colors.border,
-                  backgroundColor: reverseIdx % 2 !== 0 ? colors.stripeBg : 'transparent',
+                  backgroundColor: idx % 2 !== 0 ? colors.stripeBg : 'transparent',
                 },
               ]}
             >
@@ -83,7 +81,6 @@ export default function GameHistory({ game }: Props) {
 
                 return (
                   <RNView key={username} style={styles.playerCell}>
-                    <Text style={[styles.cellScore, { color: colors.text }]}>{move.value}</Text>
                     <Text style={[styles.cellDelta, { color: deltaColor }]}>
                       {move.satOut
                         ? 'out'
@@ -91,12 +88,12 @@ export default function GameHistory({ game }: Props) {
                           ? `${move.delta > 0 ? '+' : ''}${move.delta}`
                           : ''}
                     </Text>
+                    <Text style={[styles.cellScore, { color: colors.text }]}>{move.value}</Text>
                   </RNView>
                 );
               })}
             </RNView>
-          );
-          })}
+          ))}
         </RNView>
       </ScrollView>
     </RNView>

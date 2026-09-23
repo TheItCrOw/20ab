@@ -1,6 +1,5 @@
 import json
 import os
-from functools import lru_cache
 from datetime import date, datetime
 from pathlib import Path
 from typing import List
@@ -78,6 +77,19 @@ class DataService:
         return games
 
 
-@lru_cache(maxsize=1)
+_data_service = None
+_last_game_count = None
+
+
 def get_data_service() -> DataService:
-    return DataService(constants.DATA_PATH)
+    """Return the DataService singleton, auto-reloading when game files change on disk."""
+    global _data_service, _last_game_count
+    games_dir = Path(os.path.join(constants.DATA_PATH, "games"))
+    current_count = len(list(games_dir.glob("*.json")))
+    if _data_service is None:
+        _data_service = DataService(constants.DATA_PATH)
+        _last_game_count = current_count
+    elif current_count != _last_game_count:
+        _data_service.reload()
+        _last_game_count = current_count
+    return _data_service

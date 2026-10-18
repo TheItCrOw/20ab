@@ -11,24 +11,37 @@ interface Props {
   onSelect: (suit: TrumpSuit) => void;
   roundNumber: number;
   currentPlayer?: string;
+  onUndo?: () => void;
 }
 
-export default function TrumpSelector({ onSelect, roundNumber, currentPlayer }: Props) {
+export default function TrumpSelector({ onSelect, roundNumber, currentPlayer, onUndo }: Props) {
   const colorScheme = useColorScheme() ?? 'dark';
   const colors = Colors[colorScheme];
   const accentColor = colorScheme === 'dark' ? accent.dark : accent.light;
 
   return (
     <RNView style={[styles.container, { backgroundColor: 'transparent' }]}>
-      <Text style={[styles.roundLabel, { color: colors.textSecondary }]}>
-        ROUND {roundNumber}
-      </Text>
-      {currentPlayer && (
-        <Text style={[styles.currentPlayer, { color: accentColor }]}>
-          {currentPlayer}'s turn
-        </Text>
-      )}
-      {/* <Text style={[styles.title, { color: colors.text }]}>Choose Trump</Text> */}
+      <RNView style={styles.headerRow}>
+        <RNView style={styles.headerText}>
+          <Text style={[styles.roundLabel, { color: colors.textSecondary }]}>
+            ROUND {roundNumber}
+          </Text>
+          {currentPlayer && (
+            <Text style={[styles.currentPlayer, { color: accentColor }]}>
+              {currentPlayer}'s turn
+            </Text>
+          )}
+        </RNView>
+        {onUndo && (
+          <TouchableOpacity
+            style={[styles.undoBtn, { borderColor: accentColor }]}
+            onPress={onUndo}
+            activeOpacity={0.7}
+          >
+            <Text style={{ color: accentColor, fontWeight: '600', fontSize: 13 }}>Undo</Text>
+          </TouchableOpacity>
+        )}
+      </RNView>
 
       <RNView style={styles.grid}>
         {SUITS.map((suit) => (
@@ -69,18 +82,31 @@ export default function TrumpSelector({ onSelect, roundNumber, currentPlayer }: 
 
 const styles = StyleSheet.create({
   container: { paddingHorizontal: 16, paddingVertical: 12 },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  headerText: {
+    flex: 1,
+  },
+  undoBtn: {
+    borderWidth: 1.5,
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    marginLeft: 12,
+  },
   roundLabel: {
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 2,
-    textAlign: 'center',
     marginBottom: 2,
   },
   currentPlayer: {
     fontSize: 16,
     fontWeight: '800',
-    textAlign: 'center',
-    marginBottom: 12,
   },
   title: {
     fontSize: 20,

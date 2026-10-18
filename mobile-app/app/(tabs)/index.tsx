@@ -18,6 +18,7 @@ import {
   getActiveGame,
   saveActiveGame,
   saveGame,
+  deleteGame,
   seedPlayersIfEmpty,
   runDataWipeIfNeeded,
 } from '@/services/storage';
@@ -198,6 +199,29 @@ export default function GameScreen() {
     setPhase('no_game');
   }
 
+  async function handleUndoFinished() {
+    if (!game) return;
+
+    if (game.tiebreak && game.tiebreak.rounds.length > 0) {
+      // Game ended via tiebreak — undo the last tiebreak round
+      const updated = undoLastTiebreakRound(game);
+      setGame(updated);
+      await deleteGame(game.id);
+      await saveActiveGame(updated);
+      setSelectedTrump(null);
+      setPhase('tiebreak_trump');
+    } else {
+      // Game ended via normal round — undo the last round
+      const updated = undoLastRound(game);
+      setGame(updated);
+      await deleteGame(game.id);
+      await saveActiveGame(updated);
+      setSelectedTrump(null);
+      setPhase('trump_select');
+    }
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  }
+
   // --- Tiebreak handlers ---
 
   async function handleTiebreakStarterSelected(starterUsername: string) {
@@ -290,7 +314,7 @@ export default function GameScreen() {
 
   if (phase === 'game_finished' && game) {
     return (
-      <GameFinished game={game} players={players} onNewGame={handleNewGame} />
+      <GameFinished game={game} players={players} onNewGame={handleNewGame} onUndo={handleUndoFinished} />
     );
   }
 
@@ -385,20 +409,11 @@ export default function GameScreen() {
         </ScrollView>
 
         <RNView style={[styles.bottomArea, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
-          {tb.rounds.length > 0 && (
-            <RNView style={styles.actions}>
-              <TouchableOpacity
-                style={[styles.actionBtn, { borderColor: accentColor }]}
-                onPress={handleTiebreakUndo}
-              >
-                <Text style={{ color: accentColor, fontWeight: '600' }}>Undo</Text>
-              </TouchableOpacity>
-            </RNView>
-          )}
           <TrumpSelector
             roundNumber={roundNum}
             currentPlayer={getTiebreakTurnPlayer(game, roundNum)}
             onSelect={handleTiebreakTrumpSelected}
+            onUndo={tb.rounds.length > 0 ? handleTiebreakUndo : undefined}
           />
         </RNView>
       </RNView>
@@ -469,21 +484,11 @@ export default function GameScreen() {
 
         {/* Fixed bottom: action buttons + trump selector */}
         <RNView style={[styles.bottomArea, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
-          {game.rounds.length > 0 && (
-            <RNView style={styles.actions}>
-              <TouchableOpacity
-                style={[styles.actionBtn, { borderColor: accentColor }]}
-                onPress={handleUndo}
-              >
-                <Text style={{ color: accentColor, fontWeight: '600' }}>Undo</Text>
-              </TouchableOpacity>
-            </RNView>
-          )}
-
           <TrumpSelector
             roundNumber={game.rounds.length + 1}
             currentPlayer={getCurrentTurnPlayer(game, game.rounds.length + 1)}
             onSelect={handleTrumpSelected}
+            onUndo={game.rounds.length > 0 ? handleUndo : undefined}
           />
         </RNView>
       </RNView>
@@ -517,14 +522,6 @@ const styles = StyleSheet.create({
   bottomArea: {
     borderTopWidth: StyleSheet.hairlineWidth,
     paddingBottom: 8,
-  },
-  actions: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 12,
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 4,
   },
   actionBtn: {
     borderWidth: 1.5,

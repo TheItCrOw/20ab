@@ -17,9 +17,10 @@ interface Props {
   game: Game;
   players: Player[];
   onNewGame: () => void;
+  onUndo: () => void;
 }
 
-export default function GameFinished({ game, players, onNewGame }: Props) {
+export default function GameFinished({ game, players, onNewGame, onUndo }: Props) {
   const colorScheme = useColorScheme() ?? 'dark';
   const colors = Colors[colorScheme];
   const accentColor = colorScheme === 'dark' ? accent.dark : accent.light;
@@ -33,6 +34,7 @@ export default function GameFinished({ game, players, onNewGame }: Props) {
   const insets = useSafeAreaInsets();
   const scores = getAllScores(game);
 
+  const [undoModalVisible, setUndoModalVisible] = useState(false);
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [password, setPassword] = useState('');
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -77,6 +79,15 @@ export default function GameFinished({ game, players, onNewGame }: Props) {
         {game.rounds.length} rounds played
         {game.tiebreak ? ` · ${game.tiebreak.rounds.length} tiebreaker` : ''}
       </Text>
+
+      <TouchableOpacity
+        style={styles.undoLink}
+        onPress={() => setUndoModalVisible(true)}
+        activeOpacity={0.6}
+      >
+        <FontAwesome name="undo" size={12} color={accentColor} style={{ marginRight: 6 }} />
+        <Text style={[styles.undoLinkText, { color: accentColor }]}>Undo last round</Text>
+      </TouchableOpacity>
 
       {/* Result cards */}
       <RNView style={styles.resultRow}>
@@ -165,6 +176,40 @@ export default function GameFinished({ game, players, onNewGame }: Props) {
       >
         <Text style={styles.newGameText}>New Game</Text>
       </TouchableOpacity>
+
+      {/* Undo confirmation modal */}
+      <Modal
+        visible={undoModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setUndoModalVisible(false)}
+      >
+        <RNView style={styles.undoModalOverlay}>
+          <RNView style={[styles.undoModalBox, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Text style={[styles.undoModalTitle, { color: colors.text }]}>Undo Last Round?</Text>
+            <Text style={[styles.undoModalMessage, { color: colors.textSecondary }]}>
+              This will reopen the game and let you re-enter the last round's scores.
+            </Text>
+            <RNView style={styles.undoModalButtons}>
+              <TouchableOpacity
+                style={[styles.undoModalBtn, { borderColor: colors.border, borderWidth: 1 }]}
+                onPress={() => setUndoModalVisible(false)}
+              >
+                <Text style={{ color: colors.textSecondary, fontWeight: '600' }}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.undoModalBtn, { backgroundColor: accentColor }]}
+                onPress={() => {
+                  setUndoModalVisible(false);
+                  onUndo();
+                }}
+              >
+                <Text style={{ color: '#fff', fontWeight: '700' }}>Undo</Text>
+              </TouchableOpacity>
+            </RNView>
+          </RNView>
+        </RNView>
+      </Modal>
 
       {/* Upload modal */}
       <Modal
@@ -267,7 +312,52 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 13,
     fontWeight: '500',
+    marginBottom: 8,
+  },
+  undoLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 6,
+    marginBottom: 16,
+  },
+  undoLinkText: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  undoModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 32,
+  },
+  undoModalBox: {
+    width: '100%',
+    borderRadius: 16,
+    padding: 24,
+  },
+  undoModalTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  undoModalMessage: {
+    fontSize: 15,
+    textAlign: 'center',
+    lineHeight: 22,
     marginBottom: 24,
+  },
+  undoModalButtons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  undoModalBtn: {
+    flex: 1,
+    borderRadius: 10,
+    paddingVertical: 13,
+    alignItems: 'center',
   },
   resultRow: { flexDirection: 'row', gap: 12, marginBottom: 12 },
   resultCard: {

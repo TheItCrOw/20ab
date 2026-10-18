@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import plotly.io as pio
@@ -193,8 +193,6 @@ def post_game():
     return jsonify(result), 201
 
 
-players = get_data_service().get_all_players()
-
 # ─────────────────────────────────────────────────────
 # Layout
 # ─────────────────────────────────────────────────────
@@ -230,6 +228,13 @@ app.layout = dmc.MantineProvider(
                 html.I(className="fa-solid fa-bars"),
                 id="burger-menu",
                 color="light",
+            ),
+            dbc.Button(
+                html.I(className="fa-solid fa-arrows-rotate", id="refresh-icon"),
+                id="refresh-data",
+                n_clicks=0,
+                color="light",
+                className="refresh-btn",
             ),
             dbc.Button(
                 html.I(className="fa-solid fa-sun theme-icon"),
@@ -281,7 +286,8 @@ app.layout = dmc.MantineProvider(
                             html.Div([
                                 html.Span("Players", className="filter-label"),
                                 dcc.Dropdown(
-                                    [constants.ALL_PLAYERS_NAME] + [p.username for p in players],
+                                    [constants.ALL_PLAYERS_NAME]
+                                    + [p.username for p in get_data_service().get_all_players()],
                                     id="players-selection",
                                     multi=True,
                                     value=constants.ALL_PLAYERS_NAME,
@@ -291,7 +297,7 @@ app.layout = dmc.MantineProvider(
                                 dcc.DatePickerRange(
                                     id="date-selection",
                                     start_date="2025-11-01",
-                                    end_date=str(datetime.today().date()),
+                                    end_date=str((datetime.today() + timedelta(days=1)).date()),
                                     display_format="YYYY-MM-DD",
                                     with_portal=True,
                                     className="w-100",
@@ -318,6 +324,29 @@ app.layout = dmc.MantineProvider(
 # ─────────────────────────────────────────────────────
 # Callbacks
 # ─────────────────────────────────────────────────────
+
+# Refresh button: reload data server-side, then hard-refresh the browser
+@app.callback(
+    Output("refresh-icon", "className"),
+    Input("refresh-data", "n_clicks"),
+    prevent_initial_call=True,
+)
+def refresh_data(_n):
+    """Force reload all data from disk."""
+    get_data_service().reload()
+    return "fa-solid fa-arrows-rotate"
+
+
+clientside_callback(
+    """
+    function(n) {
+        if (n > 0) { setTimeout(function() { location.reload(); }, 150); }
+        return window.dash_clientside.no_update;
+    }
+    """,
+    Output("refresh-data", "title"),
+    Input("refresh-data", "n_clicks"),
+)
 
 # Instantly set body[data-theme] via JS so CSS variables
 # switch without waiting for the stylesheet swap

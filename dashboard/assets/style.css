@@ -328,8 +328,40 @@ hr {
 
 
 /* ═══════════════════════════════════════════════════════
-   FLOATING BUTTONS (theme + burger)
+   FLOATING BUTTONS (refresh + theme + burger)
 ═══════════════════════════════════════════════════════ */
+.refresh-btn {
+  position: fixed !important;
+  top: 16px !important;
+  right: 62px !important;
+  z-index: 200;
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent) !important;
+  border: 1px solid var(--accent) !important;
+  color: #fff !important;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.35) !important;
+  font-size: 0.85rem;
+  transition:
+    background var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    transform 0.2s var(--ease),
+    box-shadow 0.2s var(--ease) !important;
+}
+
+.refresh-btn:hover {
+  transform: scale(1.12) !important;
+  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.45) !important;
+  background: var(--accent-light) !important;
+  border-color: var(--accent-light) !important;
+  color: #fff !important;
+}
+
 .theme-toggle-btn {
   position: fixed !important;
   top: 16px !important;
